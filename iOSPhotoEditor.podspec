@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
-  s.name             = 'iOSPhotoEditor2'
-  s.version          = '0.6.1'
+  s.name             = 'PhotoEditor'
+  s.version          = '0.6.3'
   s.summary          = 'Photo Editor supports drawing, writing text and adding stickers and emojis'
  
   s.description      = <<-DESC
