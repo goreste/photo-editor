@@ -41,7 +41,7 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         
         scrollView.isPagingEnabled = true
         scrollView.delegate = self
-        pageControl.numberOfPages = 2
+        pageControl.numberOfPages = 3
         
         holdView.layer.cornerRadius = 3
         let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(StickersViewController.panGesture))
@@ -51,7 +51,32 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func configureCollectionViews() {
         
-        let frame = CGRect(x: 0,
+        //-----------------------------------
+        
+        let gifsFrame = CGRect(x: 0,
+                               y: 0,
+                               width: UIScreen.main.bounds.width,
+                               height: view.frame.height - 40)
+        
+        let gifslayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        gifslayout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
+        gifslayout.itemSize = CGSize(width: 140, height: 140)
+        
+        gifsCollectioView = UICollectionView(frame: gifsFrame, collectionViewLayout: gifslayout)
+        gifsCollectioView.backgroundColor = .clear
+        scrollView.addSubview(gifsCollectioView)
+        gifsDelegate = GifCollectionViewDelegate()
+        gifsDelegate.stickersViewControllerDelegate = stickersViewControllerDelegate
+        gifsCollectioView.delegate = gifsDelegate
+        gifsCollectioView.dataSource = gifsDelegate
+        
+        gifsCollectioView.register(
+            UINib(nibName: "GifCollectionViewCell", bundle: Bundle(for: GifCollectionViewCell.self)),
+            forCellWithReuseIdentifier: "GifCollectionViewCell")
+
+        //-----------------------------------
+        
+        let frame = CGRect(x: scrollView.frame.size.width,
                            y: 0,
                            width: UIScreen.main.bounds.width,
                            height: view.frame.height - 40)
@@ -74,7 +99,7 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         
         //-----------------------------------
         
-        let emojisFrame = CGRect(x: scrollView.frame.size.width,
+        let emojisFrame = CGRect(x: scrollView.frame.size.width * 2,
                                  y: 0,
                                  width: UIScreen.main.bounds.width,
                                  height: view.frame.height - 40)
@@ -94,29 +119,6 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         emojisCollectioView.register(
             UINib(nibName: "EmojiCollectionViewCell", bundle: Bundle(for: EmojiCollectionViewCell.self)),
             forCellWithReuseIdentifier: "EmojiCollectionViewCell")
-        
-        //-----------------------------------
-        
-        let gifsFrame = CGRect(x: scrollView.frame.size.width * 2,
-                                 y: 0,
-                                 width: UIScreen.main.bounds.width,
-                                 height: view.frame.height - 40)
-        
-        let gifslayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        gifslayout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
-        gifslayout.itemSize = CGSize(width: 140, height: 140)
-        
-        gifsCollectioView = UICollectionView(frame: gifsFrame, collectionViewLayout: gifslayout)
-        gifsCollectioView.backgroundColor = .clear
-        scrollView.addSubview(gifsCollectioView)
-        gifsDelegate = GifCollectionViewDelegate()
-        gifsDelegate.stickersViewControllerDelegate = stickersViewControllerDelegate
-        gifsCollectioView.delegate = gifsDelegate
-        gifsCollectioView.dataSource = gifsDelegate
-        
-        gifsCollectioView.register(
-            UINib(nibName: "GifCollectionViewCell", bundle: Bundle(for: GifCollectionViewCell.self)),
-            forCellWithReuseIdentifier: "GifCollectionViewCell")
 
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -140,17 +142,17 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        collectioView.frame = CGRect(x: 0,
+        gifsCollectioView.frame = CGRect(x: 0,
+                                         y: 0,
+                                         width: UIScreen.main.bounds.width,
+                                         height: view.frame.height - 40)
+        
+        collectioView.frame = CGRect(x: scrollView.frame.size.width,
                                      y: 0,
                                      width: UIScreen.main.bounds.width,
                                      height: view.frame.height - 40)
         
-        emojisCollectioView.frame = CGRect(x: scrollView.frame.size.width,
-                                           y: 0,
-                                           width: UIScreen.main.bounds.width,
-                                           height: view.frame.height - 40)
-        
-        gifsCollectioView.frame = CGRect(x: scrollView.frame.size.width * 2,
+        emojisCollectioView.frame = CGRect(x: scrollView.frame.size.width * 2,
                                            y: 0,
                                            width: UIScreen.main.bounds.width,
                                            height: view.frame.height - 40)
@@ -229,9 +231,6 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         bluredView.frame = UIScreen.main.bounds
         view.insertSubview(bluredView, at: 0)
     }
-    
-    
-    
 }
 
 extension StickersViewController: UIScrollViewDelegate {
@@ -272,6 +271,5 @@ extension StickersViewController: UICollectionViewDataSource, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
-    
 }
 

@@ -30,7 +30,7 @@ class GifCollectionViewDelegate: NSObject, UICollectionViewDataSource, UICollect
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "GifCollectionViewCell", for: indexPath) as! GifCollectionViewCell
-        cell.gifImageView.loadGif(name: gifs[indexPath.row])
+        cell.gifImageView.animate(withGIFNamed: gifs[indexPath.row])
         return cell
     }
     

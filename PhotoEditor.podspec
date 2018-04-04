@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'PhotoEditor'
-  s.version          = '0.6.6'
+  s.version          = '0.6.7'
   s.summary          = 'Photo Editor supports drawing, writing text and adding stickers and emojis'
  
   s.description      = <<-DESC
@@ -18,4 +18,9 @@ with the ability to scale and rotate objects
   s.exclude_files = "PhotoEditor/AppDelegate.swift"
   s.resources = "PhotoEditor/*.{png,jpeg,jpg,storyboard,xib,ttf}"
 
+  s.default_subspec = "Core"
+
+  s.subspec "Core" do |ss|
+    ss.dependency "Gifu"
+  end
 end

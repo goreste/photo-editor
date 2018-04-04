@@ -7,10 +7,10 @@
 //
 
 import UIKit
-import SwiftGifOrigin
+import Gifu
 
 class GifCollectionViewCell: UICollectionViewCell {
-    @IBOutlet weak var gifImageView: UIImageView!
+    @IBOutlet weak var gifImageView: GIFImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

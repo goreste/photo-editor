@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-import SwiftGifOrigin
+import Gifu
 
 extension PhotoEditorViewController {
     
@@ -52,9 +52,9 @@ extension PhotoEditorViewController: StickersViewControllerDelegate {
     func didSelectGif(gifName: String) {
         self.removeStickersView()
         
-        let imageView = UIImageView()
-        imageView.loadGif(name: gifName)
-        imageView.contentMode = .scaleAspectFill
+        let imageView = GIFImageView()
+        imageView.animate(withGIFNamed: gifName)
+        imageView.contentMode = .scaleAspectFit
         imageView.frame.size = CGSize(width: 150, height: 150)
         imageView.center = canvasImageView.center
         
