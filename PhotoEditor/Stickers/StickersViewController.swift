@@ -16,9 +16,11 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
     
     var collectioView: UICollectionView!
     var emojisCollectioView: UICollectionView!
-    
+    var gifsCollectioView: UICollectionView!
+
     var emojisDelegate: EmojisCollectionViewDelegate!
-    
+    var gifsDelegate: GifCollectionViewDelegate!
+
     var stickers : [UIImage] = []
     var stickersViewControllerDelegate : StickersViewControllerDelegate?
     
@@ -93,6 +95,29 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
             UINib(nibName: "EmojiCollectionViewCell", bundle: Bundle(for: EmojiCollectionViewCell.self)),
             forCellWithReuseIdentifier: "EmojiCollectionViewCell")
         
+        //-----------------------------------
+        
+        let gifsFrame = CGRect(x: scrollView.frame.size.width * 2,
+                                 y: 0,
+                                 width: UIScreen.main.bounds.width,
+                                 height: view.frame.height - 40)
+        
+        let gifslayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        gifslayout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
+        gifslayout.itemSize = CGSize(width: 140, height: 140)
+        
+        gifsCollectioView = UICollectionView(frame: gifsFrame, collectionViewLayout: gifslayout)
+        gifsCollectioView.backgroundColor = .clear
+        scrollView.addSubview(gifsCollectioView)
+        gifsDelegate = GifCollectionViewDelegate()
+        gifsDelegate.stickersViewControllerDelegate = stickersViewControllerDelegate
+        gifsCollectioView.delegate = gifsDelegate
+        gifsCollectioView.dataSource = gifsDelegate
+        
+        gifsCollectioView.register(
+            UINib(nibName: "GifCollectionViewCell", bundle: Bundle(for: GifCollectionViewCell.self)),
+            forCellWithReuseIdentifier: "GifCollectionViewCell")
+
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -125,7 +150,12 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
                                            width: UIScreen.main.bounds.width,
                                            height: view.frame.height - 40)
         
-        scrollView.contentSize = CGSize(width: 2.0 * screenSize.width,
+        gifsCollectioView.frame = CGRect(x: scrollView.frame.size.width * 2,
+                                           y: 0,
+                                           width: UIScreen.main.bounds.width,
+                                           height: view.frame.height - 40)
+
+        scrollView.contentSize = CGSize(width: 3.0 * screenSize.width,
                                         height: scrollView.frame.size.height)
     }
     

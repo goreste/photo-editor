@@ -41,6 +41,10 @@ protocol StickersViewControllerDelegate {
      */
     func didSelectImage(image: UIImage)
     /**
+     - Parameter gif name: selected Gif from StickersViewController
+     */
+    func didSelectGif(gifName: String)
+    /**
      StickersViewController did Disappear
      */
     func stickersViewDidDisappear()
