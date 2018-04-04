@@ -11,7 +11,6 @@ import UIKit
 import Gifu
 
 extension PhotoEditorViewController {
-    
     func addStickersViewController() {
         stickersVCIsVisible = true
         hideToolbar(hide: true)
@@ -21,6 +20,10 @@ extension PhotoEditorViewController {
         for image in self.stickers {
             stickersViewController.stickers.append(image)
         }
+        for gifName in self.gifs {
+            stickersViewController.gifs.append(gifName)
+        }
+
         self.addChildViewController(stickersViewController)
         self.view.addSubview(stickersViewController.view)
         stickersViewController.didMove(toParentViewController: self)

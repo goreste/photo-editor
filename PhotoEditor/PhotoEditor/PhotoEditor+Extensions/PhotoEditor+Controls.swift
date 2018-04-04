@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Gifu
 
 // MARK: - Control
 public enum control {
@@ -101,9 +102,18 @@ extension PhotoEditorViewController {
     }
     
     @IBAction func continueButtonPressed(_ sender: Any) {
-        let img = self.canvasView.toImage()
-        photoEditorDelegate?.doneEditing(image: img)
-        self.dismiss(animated: true, completion: nil)
+        let gifImageViews = self.canvasImageView.subviews.filter({ $0.isKind(of: GIFImageView.classForCoder()) }) as? [GIFImageView] ?? []
+        self.canvasImageView.subviews.forEach { view in
+            if view.isKind(of: GIFImageView.classForCoder()) {
+                view.removeFromSuperview()
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+            guard let `self` = self else { return }
+            let image = self.canvasView.toImage()
+            self.photoEditorDelegate?.doneEditing(image: image, gifImageViews: gifImageViews)
+            self.dismiss(animated: true, completion: nil)
+        }
     }
 
     //MAKR: helper methods

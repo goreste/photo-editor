@@ -7,8 +7,6 @@
 //
 
 import Foundation
-
-
 import UIKit
 
 extension PhotoEditorViewController : UIGestureRecognizerDelegate  {

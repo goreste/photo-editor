@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import Gifu
+
 /**
  - didSelectView
  - didSelectImage
@@ -18,7 +20,7 @@ public protocol PhotoEditorDelegate {
     /**
      - Parameter image: edited Image
      */
-    func doneEditing(image: UIImage)
+    func doneEditing(image: UIImage, gifImageViews: [GIFImageView])
     /**
      StickersViewController did Disappear
      */

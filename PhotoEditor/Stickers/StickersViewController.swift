@@ -21,6 +21,7 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
     var emojisDelegate: EmojisCollectionViewDelegate!
     var gifsDelegate: GifCollectionViewDelegate!
 
+    var gifs : [String] = []
     var stickers : [UIImage] = []
     var stickersViewControllerDelegate : StickersViewControllerDelegate?
     
@@ -60,12 +61,14 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         
         let gifslayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         gifslayout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
-        gifslayout.itemSize = CGSize(width: 140, height: 140)
+        let width = (CGFloat) ((screenSize.width - 30) / 3.0)
+        gifslayout.itemSize = CGSize(width: width, height: 100)
         
         gifsCollectioView = UICollectionView(frame: gifsFrame, collectionViewLayout: gifslayout)
         gifsCollectioView.backgroundColor = .clear
         scrollView.addSubview(gifsCollectioView)
         gifsDelegate = GifCollectionViewDelegate()
+        gifsDelegate.gifs = gifs
         gifsDelegate.stickersViewControllerDelegate = stickersViewControllerDelegate
         gifsCollectioView.delegate = gifsDelegate
         gifsCollectioView.dataSource = gifsDelegate
@@ -83,7 +86,6 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
-        let width = (CGFloat) ((screenSize.width - 30) / 3.0)
         layout.itemSize = CGSize(width: width, height: 100)
         
         collectioView = UICollectionView(frame: frame, collectionViewLayout: layout)

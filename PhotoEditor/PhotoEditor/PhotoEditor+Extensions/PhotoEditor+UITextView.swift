@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 
 extension PhotoEditorViewController: UITextViewDelegate {
-    
     public func textViewDidChange(_ textView: UITextView) {
         let rotation = atan2(textView.transform.b, textView.transform.a)
         if rotation == 0 {
@@ -19,6 +18,7 @@ extension PhotoEditorViewController: UITextViewDelegate {
             textView.frame.size = CGSize(width: oldFrame.width, height: sizeToFit.height)
         }
     }
+    
     public func textViewDidBeginEditing(_ textView: UITextView) {
         isTyping = true
         lastTextViewTransform =  textView.transform
