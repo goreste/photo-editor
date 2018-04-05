@@ -20,8 +20,8 @@ extension PhotoEditorViewController {
         for image in self.stickers {
             stickersViewController.stickers.append(image)
         }
-        for gifName in self.gifs {
-            stickersViewController.gifs.append(gifName)
+        for gifUrl in self.gifs {
+            stickersViewController.gifs.append(gifUrl)
         }
 
         self.addChildViewController(stickersViewController)
@@ -52,11 +52,11 @@ extension PhotoEditorViewController {
 }
 
 extension PhotoEditorViewController: StickersViewControllerDelegate {
-    func didSelectGif(gifName: String) {
+    func didSelectGif(gifUrl: URL) {
         self.removeStickersView()
         
         let imageView = GIFImageView()
-        imageView.animate(withGIFNamed: gifName)
+        imageView.animate(withGIFURL: gifUrl)
         imageView.contentMode = .scaleAspectFit
         imageView.frame.size = CGSize(width: 150, height: 150)
         imageView.center = canvasImageView.center
@@ -111,7 +111,7 @@ extension PhotoEditorViewController: StickersViewControllerDelegate {
         view.addGestureRecognizer(pinchGesture)
         
         let rotationGestureRecognizer = UIRotationGestureRecognizer(target: self,
-                                                                    action:#selector(PhotoEditorViewController.rotationGesture) )
+                                                                    action:#selector(PhotoEditorViewController.rotationGesture))
         rotationGestureRecognizer.delegate = self
         view.addGestureRecognizer(rotationGestureRecognizer)
         

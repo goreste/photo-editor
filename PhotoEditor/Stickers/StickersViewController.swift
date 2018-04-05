@@ -21,7 +21,7 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
     var emojisDelegate: EmojisCollectionViewDelegate!
     var gifsDelegate: GifCollectionViewDelegate!
 
-    var gifs : [String] = []
+    var gifs : [URL] = []
     var stickers : [UIImage] = []
     var stickersViewControllerDelegate : StickersViewControllerDelegate?
     

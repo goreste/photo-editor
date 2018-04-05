@@ -12,7 +12,7 @@ class GifCollectionViewDelegate: NSObject, UICollectionViewDataSource, UICollect
     
     var stickersViewControllerDelegate : StickersViewControllerDelegate?
     
-    var gifs: [String] = []
+    var gifs: [URL] = []
     
     override init() {
         super.init()
@@ -28,12 +28,12 @@ class GifCollectionViewDelegate: NSObject, UICollectionViewDataSource, UICollect
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "GifCollectionViewCell", for: indexPath) as! GifCollectionViewCell
-        cell.gifImageView.animate(withGIFNamed: gifs[indexPath.row])
+        cell.setup(url: gifs[indexPath.row])
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        stickersViewControllerDelegate?.didSelectGif(gifName: gifs[indexPath.row])
+        stickersViewControllerDelegate?.didSelectGif(gifUrl: gifs[indexPath.row])
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {

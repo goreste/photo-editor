@@ -11,10 +11,20 @@ import Gifu
 
 class GifCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var gifImageView: GIFImageView!
-    
+    @IBOutlet weak var loadingView: UIActivityIndicatorView!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         
         gifImageView.contentMode = .scaleAspectFill
+    }
+    
+    func setup(url: URL) {
+        loadingView.startAnimating()
+        gifImageView.animate(withGIFURL: url, loopCount: 0) { [weak self] in
+            DispatchQueue.main.async {
+                self?.loadingView.stopAnimating()
+            }
+        }
     }
 }

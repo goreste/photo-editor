@@ -22,18 +22,24 @@
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Nm0-jW-eDb" customClass="GIFImageView" customModule="Gifu">
                         <rect key="frame" x="0.0" y="0.0" width="263" height="119"/>
                     </imageView>
+                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="gnq-E1-jUC">
+                        <rect key="frame" x="121" y="49" width="20" height="20"/>
+                    </activityIndicatorView>
                 </subviews>
             </view>
             <constraints>
+                <constraint firstItem="gnq-E1-jUC" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="3Hd-6s-Q7o"/>
                 <constraint firstAttribute="trailing" secondItem="Nm0-jW-eDb" secondAttribute="trailing" id="44b-1O-srm"/>
                 <constraint firstItem="Nm0-jW-eDb" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="FAh-7H-REe"/>
                 <constraint firstItem="Nm0-jW-eDb" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Hbl-Ap-WM0"/>
+                <constraint firstItem="gnq-E1-jUC" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="PR5-f6-q24"/>
                 <constraint firstAttribute="bottom" secondItem="Nm0-jW-eDb" secondAttribute="bottom" id="smj-F8-QvK"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="263" height="119"/>
             <connections>
                 <outlet property="gifImageView" destination="Nm0-jW-eDb" id="XTJ-hW-3LX"/>
+                <outlet property="loadingView" destination="gnq-E1-jUC" id="ITe-7h-qN7"/>
             </connections>
             <point key="canvasLocation" x="-72.5" y="88.5"/>
         </collectionViewCell>

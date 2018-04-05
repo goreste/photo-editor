@@ -45,9 +45,9 @@ public final class PhotoEditorViewController: UIViewController {
      */
     public var stickers : [UIImage] = []
     /**
-     Array of Gifs -String- that the user will choose from
+     Array of Gifs -URL- that the user will choose from
      */
-    public var gifs : [String] = []
+    public var gifs : [URL] = []
     /**
      Array of Colors that will show while drawing or typing
      */

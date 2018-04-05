@@ -45,7 +45,7 @@ protocol StickersViewControllerDelegate {
     /**
      - Parameter gif name: selected Gif from StickersViewController
      */
-    func didSelectGif(gifName: String)
+    func didSelectGif(gifUrl: URL)
     /**
      StickersViewController did Disappear
      */
