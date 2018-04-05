@@ -27,7 +27,7 @@ extension PhotoEditorViewModel {
             urlResults.flatMap({ result in
                 switch result {
                 case let .fulfilled(url):
-                    print("promise error: \(url)")
+                    print("success: \(url)")
                     return url
                 case let .rejected(error):
                     print("promise error: \(error)")
