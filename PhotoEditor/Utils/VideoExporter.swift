@@ -11,21 +11,36 @@ import AVFoundation
 import Gifu
 
 class VideoExporter {
-    func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL]) {
+    func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL], completion: @escaping (String) -> Void) {
         guard let backgroundImage = imageView.image else { return }
         guard gifImageViews.count == videoUrls.count else { return }
         let mixComposition = AVMutableComposition()
 
         
         let assets = videoUrls.map({ AVURLAsset(url: $0 )})
-        guard let maxDuration = assets.sorted(by: { $0.duration > $1.duration }).map({ $0.duration }).first else { return }
+        guard var maxDuration = assets.sorted(by: { $0.duration > $1.duration }).map({ $0.duration }).first else { return }
+       
+        guard let videoBundleUrl = FileUtils.scanFilesFor(fileExtension: "mp4").first else { return }
+        let urlAsset = AVURLAsset(url: videoBundleUrl)
         
-        let layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
+        if urlAsset.duration > maxDuration {
+            maxDuration = urlAsset.duration
+        }
+        
+
+        var layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
             guard let track = createTrack(asset: urlAsset, composition: mixComposition, maxDuration: Float(maxDuration.value)) else { return nil }
             let gif = gifImageViews[index]
             let gifTransform = gif.transform.translatedBy(x: gif.frame.origin.x * UIScreen.main.scale, y: gif.frame.origin.y * UIScreen.main.scale)
             return createLayerInstruction(track: track, transform: gifTransform)
         }
+        
+        //            guard let asset = urlAsset.tracks(withMediaType: AVMediaTypeVideo).first else { return }
+        //            let size = asset.naturalSize
+        guard let track = createTrack(asset: urlAsset, composition: mixComposition, maxDuration: Float(maxDuration.value)) else { return } //TODO: fix maxDuration
+        let instruction = createLayerInstruction(track: track, transform: CGAffineTransform(scaleX: 5, y: 5))
+        layerInstructions.append(instruction)
+
         
         let mainInstruction = AVMutableVideoCompositionInstruction()
         mainInstruction.layerInstructions = layerInstructions
@@ -37,7 +52,7 @@ class VideoExporter {
         mainComposition.renderSize = CGSize(width: backgroundImage.size.width * UIScreen.main.scale, height: backgroundImage.size.height * UIScreen.main.scale)
 
 //        addOverlayImage(image: backgroundImage, composition: mainComposition)
-        exportVideo(composition: mixComposition, videoComposition: mainComposition)
+        exportVideo(composition: mixComposition, videoComposition: mainComposition, completion: completion)
     }
     
     func addOverlayImage(image: UIImage, composition: AVMutableVideoComposition) {
@@ -91,7 +106,7 @@ extension VideoExporter {
         return layerInstruction
     }
     
-    func exportVideo(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition) {
+    func exportVideo(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (String) -> Void) {
         if let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first {
             /// create a path to the video file
             let completeMoviePath = URL(fileURLWithPath: documentsPath).appendingPathComponent("videoMerged.m4v")
@@ -122,6 +137,9 @@ extension VideoExporter {
                         print("failure \(error)")
                     }
                     
+                case .completed:
+                    completion(completeMoviePath.path)
+
                 default:
                     print("finished \(completeMoviePath)")
                 }
