@@ -107,7 +107,6 @@ extension PhotoEditorViewController {
         var gifRemoteUrls: [URL] = []
         self.canvasImageView.subviews.forEach { view in
             if view.isKind(of: GIFImageView.classForCoder()) {
-                print("gif image view tag: \(view.tag)")
                 if view.tag < viewModel.gifUrls.count {
                     gifRemoteUrls.append(viewModel.gifUrls[view.tag])
                 }

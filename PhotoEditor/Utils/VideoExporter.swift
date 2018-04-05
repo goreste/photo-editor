@@ -13,39 +13,28 @@ import Gifu
 class VideoExporter {
     func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL]) {
         guard let backgroundImage = imageView.image else { return }
-        guard gifImageViews.count > 1 else { return }
-        guard videoUrls.count > 1 else { return }
-        let firstGif = gifImageViews[0]
-        let secondGif = gifImageViews[1]
-        let firstVideoUrl = videoUrls[0]
-        let secondVideoUrl = videoUrls[1]
-
-        let firstAsset = AVURLAsset(url: firstVideoUrl)
-        let secondAsset = AVURLAsset(url: secondVideoUrl)
-        let duration = (firstAsset.duration > secondAsset.duration) ? firstAsset.duration : secondAsset.duration
-
+        guard gifImageViews.count == videoUrls.count else { return }
         let mixComposition = AVMutableComposition()
+
         
-        guard let firstTrack = createTrack(asset: firstAsset, composition: mixComposition, maxDuration: Float(duration.value)) else { return }
-        guard let secondTrack = createTrack(asset: secondAsset, composition: mixComposition, maxDuration: Float(duration.value)) else { return }
+        let assets = videoUrls.map({ AVURLAsset(url: $0 )})
+        guard let maxDuration = assets.sorted(by: { $0.duration > $1.duration }).map({ $0.duration }).first else { return }
         
-        
-//        let scale = CGAffineTransform(scaleX: 1.0, y: 1.0)
-        let firstGifTransform = firstGif.transform.translatedBy(x: firstGif.frame.origin.x, y: firstGif.frame.origin.y)
-        let firstLayerInstruction = createLayerInstruction(track: firstTrack, transform: firstGifTransform)
-        
-//        let secondScale = CGAffineTransform(scaleX: 1.0, y: 1.0)
-        let secondGifTransform = secondGif.transform.translatedBy(x: secondGif.frame.origin.x, y: secondGif.frame.origin.y)
-        let secondLayerInstruction = createLayerInstruction(track: secondTrack, transform: secondGifTransform)
+        let layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
+            guard let track = createTrack(asset: urlAsset, composition: mixComposition, maxDuration: Float(maxDuration.value)) else { return nil }
+            let gif = gifImageViews[index]
+            let gifTransform = gif.transform.translatedBy(x: gif.frame.origin.x * UIScreen.main.scale, y: gif.frame.origin.y * UIScreen.main.scale)
+            return createLayerInstruction(track: track, transform: gifTransform)
+        }
         
         let mainInstruction = AVMutableVideoCompositionInstruction()
-        mainInstruction.layerInstructions = [firstLayerInstruction, secondLayerInstruction]
-        mainInstruction.timeRange = CMTimeRange(start: kCMTimeZero, duration: duration)
+        mainInstruction.layerInstructions = layerInstructions
+        mainInstruction.timeRange = CMTimeRange(start: kCMTimeZero, duration: maxDuration)
         
         let mainComposition = AVMutableVideoComposition()
         mainComposition.instructions = [mainInstruction]
         mainComposition.frameDuration = CMTime(value: 1, timescale: 30)
-        mainComposition.renderSize = CGSize(width: backgroundImage.size.width * 2, height: backgroundImage.size.height * 2)
+        mainComposition.renderSize = CGSize(width: backgroundImage.size.width * UIScreen.main.scale, height: backgroundImage.size.height * UIScreen.main.scale)
 
 //        addOverlayImage(image: backgroundImage, composition: mainComposition)
         exportVideo(composition: mixComposition, videoComposition: mainComposition)
@@ -78,12 +67,12 @@ extension VideoExporter {
                     var remainingDuration = maxDuration
                     while remainingDuration > 0 { // create a loop video
                         var assetDuration = asset.duration
-                        if remainingDuration < Float(asset.duration.value) {
-                            assetDuration = CMTime(value: CMTimeValue(Float(asset.duration.value) - remainingDuration), timescale: 600)
+                        if remainingDuration < Float(assetDuration.value) {
+                            assetDuration = CMTime(value: CMTimeValue(remainingDuration), timescale: 600)
                         }
                         try track.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: assetDuration), of: firstAsset, at: atTime)
                         atTime = assetDuration
-                        remainingDuration -= Float(asset.duration.value)
+                        remainingDuration -= Float(assetDuration.value)
                     }
                 }else{
                     try track.insertTimeRange(CMTimeRange(start: kCMTimeZero, duration: asset.duration), of: firstAsset, at: kCMTimeZero)
