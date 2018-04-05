@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Gifu
+import PromiseKit
 
 // MARK: - Control
 public enum control {
@@ -33,7 +34,7 @@ extension PhotoEditorViewController {
     @IBAction func cropButtonTapped(_ sender: UIButton) {
         let controller = CropViewController()
         controller.delegate = self
-        controller.image = image
+        controller.image = viewModel.image
         let navController = UINavigationController(rootViewController: controller)
         present(navController, animated: true, completion: nil)
     }
@@ -103,19 +104,30 @@ extension PhotoEditorViewController {
     
     @IBAction func continueButtonPressed(_ sender: Any) {
         let gifImageViews = self.canvasImageView.subviews.filter({ $0.isKind(of: GIFImageView.classForCoder()) }) as? [GIFImageView] ?? []
+        var gifRemoteUrls: [URL] = []
         self.canvasImageView.subviews.forEach { view in
             if view.isKind(of: GIFImageView.classForCoder()) {
+                print("gif image view tag: \(view.tag)")
+                if view.tag < viewModel.gifUrls.count {
+                    gifRemoteUrls.append(viewModel.gifUrls[view.tag])
+                }
                 view.removeFromSuperview()
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
-            guard let `self` = self else { return }
-            let image = self.canvasView.toImage()
-            self.photoEditorDelegate?.doneEditing(image: image, gifImageViews: gifImageViews)
-            self.dismiss(animated: true, completion: nil)
+        
+        viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+            .done { [weak self] gifTempVideoUrls in
+                guard let `self` = self else { return }
+                let image = self.canvasView.toImage()
+                self.photoEditorDelegate?.doneEditing(image: image, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls)
+                self.dismiss(animated: true, completion: nil)
+            }
+            .catch { error in
+                print("error while creating temp videos: \(error)")
         }
     }
-
+    
+    
     //MARK: helper methods
     
     func image(_ image: UIImage, withPotentialError error: NSErrorPointer, contextInfo: UnsafeRawPointer) {

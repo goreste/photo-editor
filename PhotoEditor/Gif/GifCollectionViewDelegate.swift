@@ -33,7 +33,7 @@ class GifCollectionViewDelegate: NSObject, UICollectionViewDataSource, UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        stickersViewControllerDelegate?.didSelectGif(gifUrl: gifs[indexPath.row])
+        stickersViewControllerDelegate?.didSelectGif(gifUrl: gifs[indexPath.row], index: indexPath.row)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {

@@ -39,15 +39,7 @@ public final class PhotoEditorViewController: UIViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var clearButton: UIButton!
     
-    public var image: UIImage?
-    /**
-     Array of Stickers -UIImage- that the user will choose from
-     */
-    public var stickers : [UIImage] = []
-    /**
-     Array of Gifs -URL- that the user will choose from
-     */
-    public var gifs : [URL] = []
+    var viewModel: PhotoEditorViewModel!
     /**
      Array of Colors that will show while drawing or typing
      */
@@ -84,7 +76,7 @@ public final class PhotoEditorViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        self.setImageView(image: image!)
+        self.setImageView(image: viewModel.image)
         
         deleteView.layer.cornerRadius = deleteView.bounds.height / 2
         deleteView.layer.borderWidth = 2.0

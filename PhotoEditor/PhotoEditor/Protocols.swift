@@ -20,7 +20,7 @@ public protocol PhotoEditorDelegate {
     /**
      - Parameter image: edited Image
      */
-    func doneEditing(image: UIImage, gifImageViews: [GIFImageView])
+    func doneEditing(image: UIImage, gifImageViews: [GIFImageView], gifVideosUrl: [URL])
     /**
      StickersViewController did Disappear
      */
@@ -45,7 +45,7 @@ protocol StickersViewControllerDelegate {
     /**
      - Parameter gif name: selected Gif from StickersViewController
      */
-    func didSelectGif(gifUrl: URL)
+    func didSelectGif(gifUrl: URL, index: Int)
     /**
      StickersViewController did Disappear
      */

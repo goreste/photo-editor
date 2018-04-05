@@ -17,10 +17,10 @@ extension PhotoEditorViewController {
         self.canvasImageView.isUserInteractionEnabled = false
         stickersViewController.stickersViewControllerDelegate = self
         
-        for image in self.stickers {
+        for image in viewModel.stickers {
             stickersViewController.stickers.append(image)
         }
-        for gifUrl in self.gifs {
+        for gifUrl in viewModel.gifUrls {
             stickersViewController.gifs.append(gifUrl)
         }
 
@@ -52,7 +52,7 @@ extension PhotoEditorViewController {
 }
 
 extension PhotoEditorViewController: StickersViewControllerDelegate {
-    func didSelectGif(gifUrl: URL) {
+    func didSelectGif(gifUrl: URL, index: Int) {
         self.removeStickersView()
         
         let imageView = GIFImageView()
@@ -60,6 +60,7 @@ extension PhotoEditorViewController: StickersViewControllerDelegate {
         imageView.contentMode = .scaleAspectFit
         imageView.frame.size = CGSize(width: 150, height: 150)
         imageView.center = canvasImageView.center
+        imageView.tag = index
         
         self.canvasImageView.addSubview(imageView)
         //Gestures

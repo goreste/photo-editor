@@ -19,6 +19,11 @@ class GifCollectionViewCell: UICollectionViewCell {
         gifImageView.contentMode = .scaleAspectFill
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        gifImageView.prepareForReuse()
+    }
+    
     func setup(url: URL) {
         loadingView.startAnimating()
         gifImageView.animate(withGIFURL: url, loopCount: 0) { [weak self] in
