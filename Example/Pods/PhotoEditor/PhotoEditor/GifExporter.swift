@@ -11,7 +11,7 @@ import ImageIO
 import MobileCoreServices
 import PromiseKit
 
-class GifExporter {
+public final class GifExporter {
     func exportAnimatedGif(image: UIImage?) -> Promise<URL> {
         return Promise(resolver: { seal in
             guard let image = image else {

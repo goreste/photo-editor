@@ -10,7 +10,7 @@ import Foundation
 import AVFoundation
 import Gifu
 
-class VideoExporter {
+public final class VideoExporter {
     func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (String) -> Void) {
         guard let backgroundImage = imageView.image else { return }
         

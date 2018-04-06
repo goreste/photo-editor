@@ -15,7 +15,7 @@ public final class PhotoEditorViewModel {
     var stickers : [UIImage] = []
     var gifUrls : [URL] = []
 
-    init(backgroundImage: UIImage, avatarImage: UIImage, stickers: [UIImage], gifUrls: [URL]) {
+    public init(backgroundImage: UIImage, avatarImage: UIImage, stickers: [UIImage], gifUrls: [URL]) {
         self.backgroundImage = backgroundImage
         self.avatarImage = avatarImage
         self.stickers = stickers
