@@ -26,7 +26,9 @@ class ViewController: UIViewController {
     }
 
     func presentPhotoEditor(image: UIImage?) {
-        guard let image = image else { return }
+//        guard let image = image else { return }
+        guard let backgroundImage = UIImage(named: "avatar") else { return }
+        guard let avatarImage = UIImage(named: "avatar") else { return }
         var stickers: [UIImage] = []
         for i in 0...10 {
             if let image = UIImage(named: i.description) {
@@ -35,7 +37,7 @@ class ViewController: UIViewController {
         }
         let gifUrls = FileUtils.scanGifFiles()
         
-        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: image, avatarImage: UIImage(named: "avatar")!, stickers: stickers, gifUrls: gifUrls)
+        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: backgroundImage, avatarImage: avatarImage, stickers: stickers, gifUrls: gifUrls)
         let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
         photoEditor.photoEditorDelegate = self
         photoEditor.viewModel = photoEditorViewModel

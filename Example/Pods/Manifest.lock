@@ -1,8 +1,8 @@
 PODS:
   - Gifu (3.0.0)
-  - PhotoEditor (0.8.1):
-    - PhotoEditor/Core (= 0.8.1)
-  - PhotoEditor/Core (0.8.1):
+  - PhotoEditor (0.8.3):
+    - PhotoEditor/Core (= 0.8.3)
+  - PhotoEditor/Core (0.8.3):
     - Gifu
     - PromiseKit
   - PromiseKit (6.2.4):
@@ -16,23 +16,23 @@ PODS:
     - PromiseKit/CorePromise
 
 DEPENDENCIES:
-  - PhotoEditor (from `https://github.com/goreste/photo-editor.git`, tag `0.8.1`)
+  - PhotoEditor (from `https://github.com/goreste/photo-editor.git`, tag `0.8.3`)
 
 EXTERNAL SOURCES:
   PhotoEditor:
     :git: https://github.com/goreste/photo-editor.git
-    :tag: 0.8.1
+    :tag: 0.8.3
 
 CHECKOUT OPTIONS:
   PhotoEditor:
     :git: https://github.com/goreste/photo-editor.git
-    :tag: 0.8.1
+    :tag: 0.8.3
 
 SPEC CHECKSUMS:
   Gifu: 6543ca2056a3d697097c09fe543ef49348ccc892
-  PhotoEditor: e70ae0ffc15eb22fb3c0e1bf6e77172cecf939a3
+  PhotoEditor: d245adc43b8adf38d55e17755d84395739ae5a00
   PromiseKit: 625b1fc69944fc839503748101c5968cf54b527b
 
-PODFILE CHECKSUM: 28e8061984b41dbea8d03b303f226ae3347604c5
+PODFILE CHECKSUM: 388ccd41c75f84676d38dc0fee4eee904fa4b037
 
 COCOAPODS: 1.3.1

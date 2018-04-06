@@ -90,7 +90,7 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         
         collectioView = UICollectionView(frame: frame, collectionViewLayout: layout)
         collectioView.backgroundColor = .clear
-        scrollView.addSubview(collectioView)
+//        scrollView.addSubview(collectioView)
         
         collectioView.delegate = self
         collectioView.dataSource = self
@@ -101,7 +101,7 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
         
         //-----------------------------------
         
-        let emojisFrame = CGRect(x: scrollView.frame.size.width * 2,
+        let emojisFrame = CGRect(x: scrollView.frame.size.width,
                                  y: 0,
                                  width: UIScreen.main.bounds.width,
                                  height: view.frame.height - 40)
@@ -149,17 +149,17 @@ class StickersViewController: UIViewController, UIGestureRecognizerDelegate {
                                          width: UIScreen.main.bounds.width,
                                          height: view.frame.height - 40)
         
-        collectioView.frame = CGRect(x: scrollView.frame.size.width,
-                                     y: 0,
-                                     width: UIScreen.main.bounds.width,
-                                     height: view.frame.height - 40)
+//        collectioView.frame = CGRect(x: scrollView.frame.size.width,
+//                                     y: 0,
+//                                     width: UIScreen.main.bounds.width,
+//                                     height: view.frame.height - 40)
         
-        emojisCollectioView.frame = CGRect(x: scrollView.frame.size.width * 2,
+        emojisCollectioView.frame = CGRect(x: scrollView.frame.size.width,
                                            y: 0,
                                            width: UIScreen.main.bounds.width,
                                            height: view.frame.height - 40)
 
-        scrollView.contentSize = CGSize(width: 3.0 * screenSize.width,
+        scrollView.contentSize = CGSize(width: 2.0 * screenSize.width,
                                         height: scrollView.frame.size.height)
     }
     

@@ -9,7 +9,11 @@
 import UIKit
 
 public final class ImageUtil {
-    func mergeImages(backgroundImage: UIImage?, overImage: UIImage?) -> UIImage? {
+    public init() {
+        
+    }
+    
+    public func mergeImages(backgroundImage: UIImage?, overImage: UIImage?) -> UIImage? {
         guard let backgroundImage = backgroundImage else { return nil }
         guard let overImage = overImage else { return nil }
         

@@ -12,6 +12,7 @@
 		8733A74B2077B1FE00800C50 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8733A7492077B1FE00800C50 /* Main.storyboard */; };
 		8733A74D2077B20000800C50 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8733A74C2077B20000800C50 /* Assets.xcassets */; };
 		8733A7502077B20000800C50 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8733A74E2077B20000800C50 /* LaunchScreen.storyboard */; };
+		8733A7AE2077BD0400800C50 /* gif4.gif in Resources */ = {isa = PBXBuildFile; fileRef = 8733A7AD2077BD0400800C50 /* gif4.gif */; };
 		8A6BAF6DD408D37238833E58 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA6A164E1DF6B2F2B85996A8 /* Pods_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -24,6 +25,7 @@
 		8733A74C2077B20000800C50 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8733A74F2077B20000800C50 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8733A7512077B20000800C50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8733A7AD2077BD0400800C50 /* gif4.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = gif4.gif; sourceTree = "<group>"; };
 		BDC816078C166DB80338AF97 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
 		CA6A164E1DF6B2F2B85996A8 /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -76,6 +78,7 @@
 				8733A74C2077B20000800C50 /* Assets.xcassets */,
 				8733A74E2077B20000800C50 /* LaunchScreen.storyboard */,
 				8733A7512077B20000800C50 /* Info.plist */,
+				8733A7AD2077BD0400800C50 /* gif4.gif */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -151,6 +154,7 @@
 			files = (
 				8733A7502077B20000800C50 /* LaunchScreen.storyboard in Resources */,
 				8733A74D2077B20000800C50 /* Assets.xcassets in Resources */,
+				8733A7AE2077BD0400800C50 /* gif4.gif in Resources */,
 				8733A74B2077B1FE00800C50 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -367,8 +371,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 87X6PN6HL7;
 				INFOPLIST_FILE = Example/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -382,8 +390,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 87X6PN6HL7;
 				INFOPLIST_FILE = Example/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

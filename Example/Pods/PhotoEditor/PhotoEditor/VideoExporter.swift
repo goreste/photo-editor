@@ -11,7 +11,10 @@ import AVFoundation
 import Gifu
 
 public final class VideoExporter {
-    func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (String) -> Void) {
+    public init() {
+    }
+    
+    public func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (String) -> Void) {
         guard let backgroundImage = imageView.image else { return }
         
         guard gifImageViews.count == videoUrls.count else { return }
@@ -36,8 +39,8 @@ public final class VideoExporter {
         var layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
             let gif = gifImageViews[index]
             
-            let scaledByX = gif.intrinsicContentSize.width / gif.frame.width
-            let scaledByY = gif.intrinsicContentSize.height / gif.frame.height
+            let scaledByX = gif.frame.width / gif.intrinsicContentSize.width
+            let scaledByY = gif.frame.height / gif.intrinsicContentSize.height
             
             print("\n\ngif: \(gif.frame) \(gif.intrinsicContentSize) \(scaledByX) \(scaledByY)")
 

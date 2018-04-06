@@ -12,13 +12,17 @@ import MobileCoreServices
 import PromiseKit
 
 public final class GifExporter {
-    func exportAnimatedGif(image: UIImage?) -> Promise<URL> {
+    public init() {
+        
+    }
+    
+    public func exportAnimatedGif(image: UIImage?) -> Promise<URL> {
         return Promise(resolver: { seal in
             guard let image = image else {
                 seal.reject(Error.urlIsNil)
                 return
             }
-            guard let imageData = UIImageJPEGRepresentation(image, 0.1) else {
+            guard let imageData = UIImageJPEGRepresentation(image, 0.5) else {
                 seal.reject(Error.urlIsNil)
                 return
             }
@@ -45,7 +49,7 @@ public final class GifExporter {
         })
     }
     
-    func convertGifIntoVideo(remoteUrl: URL) -> Promise<URL> {
+    public func convertGifIntoVideo(remoteUrl: URL) -> Promise<URL> {
         return Promise(resolver: { seal in
             let nameGif = remoteUrl.lastPathComponent.replacingOccurrences(of: ".gif", with: "").replacingOccurrences(of: "gif", with: "")
             if let data = try? Data(contentsOf: remoteUrl) {
