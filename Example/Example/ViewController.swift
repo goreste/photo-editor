@@ -9,6 +9,8 @@
 import UIKit
 import PhotoEditor
 import Gifu
+import AVFoundation
+import AssetsLibrary
 
 class ViewController: UIViewController {
 
@@ -27,7 +29,9 @@ class ViewController: UIViewController {
         guard let image = image else { return }
         var stickers: [UIImage] = []
         for i in 0...10 {
-            stickers.append(UIImage(named: i.description )!)
+            if let image = UIImage(named: i.description) {
+                stickers.append(image)
+            }
         }
         let gifUrls = FileUtils.scanGifFiles()
         
@@ -96,16 +100,16 @@ extension ViewController: PhotoEditorDelegate {
             self?.imageView.addSubview(gifImageView)
         }
         
-        VideoExporter().createVideo(imageView: imageView, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: backgroundVideoUrl) { [weak self] videoPath in
-            DispatchQueue.main.async {
-                self?.videoPath = videoPath
-                if videoPath == "" {
-                    self?.saveVideoButton.isHidden = true
-                }else{
-                    self?.saveVideoButton.isHidden = false
-                }
-            }
-        }
+//        VideoExporter().createVideo(imageView: imageView, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: backgroundVideoUrl) { [weak self] videoPath in
+//            DispatchQueue.main.async {
+//                self?.videoPath = videoPath
+//                if videoPath == "" {
+//                    self?.saveVideoButton.isHidden = true
+//                }else{
+//                    self?.saveVideoButton.isHidden = false
+//                }
+//            }
+//        }
     }
     
     func canceledEditing() {

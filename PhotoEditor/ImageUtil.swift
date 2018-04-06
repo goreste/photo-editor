@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ImageUtil {
+public final class ImageUtil {
     func mergeImages(backgroundImage: UIImage?, overImage: UIImage?) -> UIImage? {
         guard let backgroundImage = backgroundImage else { return nil }
         guard let overImage = overImage else { return nil }

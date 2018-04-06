@@ -12,7 +12,7 @@
 		8733A74B2077B1FE00800C50 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8733A7492077B1FE00800C50 /* Main.storyboard */; };
 		8733A74D2077B20000800C50 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8733A74C2077B20000800C50 /* Assets.xcassets */; };
 		8733A7502077B20000800C50 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8733A74E2077B20000800C50 /* LaunchScreen.storyboard */; };
-		B1FAE5852A7F16EA68245DCC /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA6A164E1DF6B2F2B85996A8 /* Pods_Example.framework */; };
+		8A6BAF6DD408D37238833E58 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA6A164E1DF6B2F2B85996A8 /* Pods_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1FAE5852A7F16EA68245DCC /* Pods_Example.framework in Frameworks */,
+				8A6BAF6DD408D37238833E58 /* Pods_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,12 +95,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8733A7542077B20000800C50 /* Build configuration list for PBXNativeTarget "Example" */;
 			buildPhases = (
-				43B8720D2DCA983A65BEF70C /* [CP] Check Pods Manifest.lock */,
+				F5A964B13F56CD4738A38970 /* [CP] Check Pods Manifest.lock */,
 				8733A73E2077B1FE00800C50 /* Sources */,
 				8733A73F2077B1FE00800C50 /* Frameworks */,
 				8733A7402077B1FE00800C50 /* Resources */,
-				02F323150444ED05145EB81B /* [CP] Embed Pods Frameworks */,
-				2FE5DDEF521622A90C84F5D6 /* [CP] Copy Pods Resources */,
+				DEE0EB14DA2E7507ECA6986C /* [CP] Embed Pods Frameworks */,
+				C8876663DD2A7BAFAF4F2E59 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -158,7 +158,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		02F323150444ED05145EB81B /* [CP] Embed Pods Frameworks */ = {
+		C8876663DD2A7BAFAF4F2E59 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Example/Pods-Example-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DEE0EB14DA2E7507ECA6986C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -180,22 +195,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Example/Pods-Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2FE5DDEF521622A90C84F5D6 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Example/Pods-Example-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		43B8720D2DCA983A65BEF70C /* [CP] Check Pods Manifest.lock */ = {
+		F5A964B13F56CD4738A38970 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (

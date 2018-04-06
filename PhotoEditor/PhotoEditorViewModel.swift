@@ -9,7 +9,7 @@
 import UIKit
 import PromiseKit
 
-class PhotoEditorViewModel {
+public final class PhotoEditorViewModel {
     var backgroundImage: UIImage
     var avatarImage: UIImage
     var stickers : [UIImage] = []
