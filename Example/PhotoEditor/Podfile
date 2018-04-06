@@ -6,6 +6,6 @@ target 'PhotoEditor' do
   use_frameworks!
 
   # Pods for PhotoEditor
-  pod 'PhotoEditor', :git => 'https://github.com/goreste/photo-editor.git', :tag => '0.7.2'
+  pod 'PhotoEditor', :git => 'https://github.com/goreste/photo-editor.git', :tag => '0.7.4'
 
 end
