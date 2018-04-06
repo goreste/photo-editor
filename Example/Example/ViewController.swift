@@ -100,16 +100,16 @@ extension ViewController: PhotoEditorDelegate {
             self?.imageView.addSubview(gifImageView)
         }
         
-//        VideoExporter().createVideo(imageView: imageView, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: backgroundVideoUrl) { [weak self] videoPath in
-//            DispatchQueue.main.async {
-//                self?.videoPath = videoPath
-//                if videoPath == "" {
-//                    self?.saveVideoButton.isHidden = true
-//                }else{
-//                    self?.saveVideoButton.isHidden = false
-//                }
-//            }
-//        }
+        VideoExporter().createVideo(imageView: imageView, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: backgroundVideoUrl) { [weak self] videoPath in
+            DispatchQueue.main.async {
+                self?.videoPath = videoPath
+                if videoPath == "" {
+                    self?.saveVideoButton.isHidden = true
+                }else{
+                    self?.saveVideoButton.isHidden = false
+                }
+            }
+        }
     }
     
     func canceledEditing() {

@@ -11,7 +11,10 @@ import AVFoundation
 import Gifu
 
 public final class VideoExporter {
-    func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (String) -> Void) {
+    public init() {
+    }
+    
+    public func createVideo(imageView: UIImageView, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (String) -> Void) {
         guard let backgroundImage = imageView.image else { return }
         
         guard gifImageViews.count == videoUrls.count else { return }
