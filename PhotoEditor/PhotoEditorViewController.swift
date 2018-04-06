@@ -39,7 +39,7 @@ public final class PhotoEditorViewController: UIViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var clearButton: UIButton!
     
-    var viewModel: PhotoEditorViewModel!
+    public var viewModel: PhotoEditorViewModel!
     /**
      Array of Colors that will show while drawing or typing
      */
