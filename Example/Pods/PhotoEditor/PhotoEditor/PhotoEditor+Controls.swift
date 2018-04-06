@@ -115,8 +115,9 @@ extension PhotoEditorViewController {
         }
         
         guard let image = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
-        
-        GifExporter().exportAnimatedGif(image: image)
+        guard let imageWithItems = ImageUtil().mergeImages(backgroundImage: image, overImage: self.canvasImageView.image) else { return }
+
+        GifExporter().exportAnimatedGif(image: imageWithItems)
             .done { backgroundGifUrl in
                 GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
                     .done { [weak self] backgroundUrl in

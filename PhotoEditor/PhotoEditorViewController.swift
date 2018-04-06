@@ -64,7 +64,7 @@ public final class PhotoEditorViewController: UIViewController {
     var activeTextView: UITextView?
     var imageViewToPan: UIImageView?
     var isTyping: Bool = false
-    
+    var backgroundVideoUrl: URL!
     
     var stickersViewController: StickersViewController!
 
