@@ -22,7 +22,7 @@ class VideoExporter {
         guard var maxDuration = assets.sorted(by: { $0.duration > $1.duration }).map({ $0.duration }).first else { return }
        
         let backgroundUrlAsset = AVURLAsset(url: backgroundVideoUrl)
-        guard let backgroundAsset = backgroundUrlAsset.tracks(withMediaType: AVMediaTypeVideo).first else { return }
+        guard let backgroundAsset = backgroundUrlAsset.tracks(withMediaType: AVMediaType.video).first else { return }
         let renderSize = CGSize(width: backgroundAsset.naturalSize.width, height: backgroundAsset.naturalSize.height)
         if backgroundUrlAsset.duration > maxDuration {
             maxDuration = backgroundUrlAsset.duration
@@ -95,10 +95,10 @@ class VideoExporter {
 
 extension VideoExporter {
     func createTrack(asset: AVURLAsset, composition: AVMutableComposition, maxDuration: Float, transform: CGAffineTransform) -> AVMutableCompositionTrack? {
-        let track = composition.addMutableTrack(withMediaType: AVMediaTypeVideo, preferredTrackID: kCMPersistentTrackID_Invalid)
+        guard let track = composition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: kCMPersistentTrackID_Invalid) else { return nil }
         track.preferredTransform = transform
         do {
-            if let firstAsset = asset.tracks(withMediaType: AVMediaTypeVideo).first {
+            if let firstAsset = asset.tracks(withMediaType: AVMediaType.video).first {
                 if maxDuration > Float(asset.duration.value) {
                     var atTime = kCMTimeZero
                     var remainingDuration = maxDuration
@@ -145,7 +145,7 @@ extension VideoExporter {
             guard let exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetHighestQuality) else { return }
             exporter.outputURL = completeMoviePath
             exporter.videoComposition = videoComposition
-            exporter.outputFileType = AVFileTypeQuickTimeMovie
+            exporter.outputFileType = AVFileType.mov
             
             exporter.exportAsynchronously(completionHandler: {
                 switch exporter.status {

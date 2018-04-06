@@ -46,8 +46,8 @@ class GIF2MP4 {
             kCVPixelBufferHeightKey as String: NSNumber(value: Float(videoSize.height))
         ]
         
-        videoWriter = try! AVAssetWriter(outputURL: outputURL, fileType: AVFileTypeMPEG4)
-        videoWriterInput = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: avOutputSettings)
+        videoWriter = try! AVAssetWriter(outputURL: outputURL, fileType: AVFileType.mp4)
+        videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: avOutputSettings)
         videoWriter.add(videoWriterInput)
         
         pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoWriterInput, sourcePixelBufferAttributes: sourcePixelBufferAttributesDictionary)
