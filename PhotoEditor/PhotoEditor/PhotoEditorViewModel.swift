@@ -10,12 +10,14 @@ import UIKit
 import PromiseKit
 
 class PhotoEditorViewModel {
-    var image: UIImage
+    var backgroundImage: UIImage
+    var avatarImage: UIImage
     var stickers : [UIImage] = []
     var gifUrls : [URL] = []
 
-    init(image: UIImage, stickers: [UIImage], gifUrls: [URL]) {
-        self.image = image
+    init(backgroundImage: UIImage, avatarImage: UIImage, stickers: [UIImage], gifUrls: [URL]) {
+        self.backgroundImage = backgroundImage
+        self.avatarImage = avatarImage
         self.stickers = stickers
         self.gifUrls = gifUrls
     }
@@ -43,7 +45,6 @@ extension PhotoEditorViewModel {
                 if let data = try? Data(contentsOf: remoteUrl) {
                     let tempUrl = URL(fileURLWithPath:NSTemporaryDirectory()).appendingPathComponent("\(nameGif).mp4")
                     GIF2MP4(data: data)?.convertAndExport(to: tempUrl, completion: {
-                        NSLog("finished converting")
                         seal.fulfill(tempUrl)
                     })
                 }else{

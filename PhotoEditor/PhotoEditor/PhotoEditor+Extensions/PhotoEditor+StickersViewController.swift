@@ -56,17 +56,31 @@ extension PhotoEditorViewController: StickersViewControllerDelegate {
         self.removeStickersView()
         
         let imageView = GIFImageView()
-        imageView.animate(withGIFURL: gifUrl)
-        imageView.contentMode = .scaleAspectFit
-        imageView.frame.size = CGSize(width: 150, height: 150)
-        imageView.center = canvasImageView.center
         imageView.tag = index
-        
-        self.canvasImageView.addSubview(imageView)
-        //Gestures
-        addGestures(view: imageView)
+        imageView.clipsToBounds = true
+        imageView.center = canvasImageView.center
+        imageView.contentMode = .scaleAspectFill
+        imageView.frame.size = CGSize.zero
+        imageView.animate(withGIFURL: gifUrl, loopCount: 0) { [weak self] in
+            guard let `self` = self else { return }
+            DispatchQueue.main.async {
+                self.canvasImageView.addSubview(imageView)
+                self.addGestures(view: imageView)
+            }
+        }
     }
     
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        self.canvasImageView.subviews.forEach { imageView in
+            if imageView.isKind(of: GIFImageView.classForCoder()) {
+                if imageView.frame.size == CGSize.zero {
+                    imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: imageView.intrinsicContentSize.width / 3, height: imageView.intrinsicContentSize.height / 3)
+                }
+            }
+        }
+    }
     
     func didSelectView(view: UIView) {
         self.removeStickersView()

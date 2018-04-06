@@ -34,7 +34,7 @@ extension PhotoEditorViewController {
     @IBAction func cropButtonTapped(_ sender: UIButton) {
         let controller = CropViewController()
         controller.delegate = self
-        controller.image = viewModel.image
+        controller.image = viewModel.backgroundImage
         let navController = UINavigationController(rootViewController: controller)
         present(navController, animated: true, completion: nil)
     }
@@ -114,16 +114,29 @@ extension PhotoEditorViewController {
             }
         }
         
-        viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
-            .done { [weak self] gifTempVideoUrls in
-                guard let `self` = self else { return }
-                let image = self.canvasView.toImage()
-                self.photoEditorDelegate?.doneEditing(image: image, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls)
-                self.dismiss(animated: true, completion: nil)
-            }
-            .catch { error in
-                print("error while creating temp videos: \(error)")
+        guard let image = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
+        
+        GifExporter().exportAnimatedGif(image: image)
+            .done { backgroundGifUrl in
+                GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
+                    .done { [weak self] backgroundUrl in
+                        guard let `self` = self else { return }
+                        self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+                            .done { gifTempVideoUrls in
+                                let image = self.canvasView.toImage()
+                                self.photoEditorDelegate?.doneEditing(image: image, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: backgroundUrl)
+                                self.dismiss(animated: true, completion: nil)
+                            }
+                            .catch { error in
+                                print("error while creating temp videos: \(error)")
+                        }
+                    }.catch { error in
+                        print("error while converting background gif into video: \(error)")
+                }
+            }.catch { error in
+                print("error while converting image into gif: \(error)")
         }
+        
     }
     
     

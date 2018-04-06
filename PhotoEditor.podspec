@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'PhotoEditor'
-  s.version          = '0.7.1'
+  s.version          = '0.7.2'
   s.summary          = 'Photo Editor supports drawing, writing text and adding stickers and emojis'
  
   s.description      = <<-DESC
@@ -21,5 +21,6 @@ with the ability to scale and rotate objects
 
   s.subspec "Core" do |ss|
     ss.dependency "Gifu"
+    ss.dependency "PromiseKit"
   end
 end
