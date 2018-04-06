@@ -1,0 +1,37 @@
+{
+  "name": "PhotoEditor",
+  "version": "0.7.5",
+  "summary": "Photo Editor supports drawing, writing text and adding stickers and emojis",
+  "description": "Photo Editor supports drawing, writing text and adding stickers and emojis\nwith the ability to scale and rotate objects",
+  "homepage": "https://github.com/goreste/photo-editor",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE.md"
+  },
+  "authors": {
+    "Mohamed Hamed": "mohamed.hamed.ibrahem@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/goreste/photo-editor.git",
+    "tag": "0.7.5"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "PhotoEditor/**/*",
+  "resources": "PhotoEditor/Resources/*.{png,jpeg,jpg,storyboard,xib,ttf}",
+  "default_subspecs": "Core",
+  "subspecs": [
+    {
+      "name": "Core",
+      "dependencies": {
+        "Gifu": [
+
+        ],
+        "PromiseKit": [
+
+        ]
+      }
+    }
+  ]
+}

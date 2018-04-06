@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'PhotoEditor'
-  s.version          = '0.7.5'
+  s.version          = '0.7.6'
   s.summary          = 'Photo Editor supports drawing, writing text and adding stickers and emojis'
  
   s.description      = <<-DESC
@@ -14,8 +14,8 @@ with the ability to scale and rotate objects
   s.source           = { :git => 'https://github.com/goreste/photo-editor.git', :tag => s.version.to_s }
  
   s.ios.deployment_target = '9.0'
-  s.source_files = "PhotoEditor/**/*"
-  s.resources = "PhotoEditor/Resources/*.{png,jpeg,jpg,storyboard,xib,ttf}"
+  s.source_files = "PhotoEditor/*"
+  s.resources = "PhotoEditor/*.{png,jpeg,jpg,storyboard,xib,ttf}"
 
   s.default_subspec = "Core"
 
