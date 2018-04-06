@@ -114,8 +114,9 @@ extension PhotoEditorViewController {
             }
         }
         
-        guard let image = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
-        
+        guard let imageWithWritesAndTexts = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: self.canvasImageView.image) else { return }
+        guard let image = ImageUtil().mergeImages(backgroundImage: imageWithWritesAndTexts, overImage: viewModel.avatarImage) else { return }
+
         GifExporter().exportAnimatedGif(image: image)
             .done { backgroundGifUrl in
                 GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
