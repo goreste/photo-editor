@@ -98,7 +98,6 @@ extension ViewController: PhotoEditorDelegate {
         
         imageView.image = image
         gifImageViews.forEach { [weak self] gifImageView in
-            //            gifImageView.frame = CGRect(x: gifImageView.frame.origin.x, y: gifImageView.frame.origin.y, width: gifImageView.intrinsicContentSize.width, height: gifImageView.intrinsicContentSize.height)
             self?.imageView.addSubview(gifImageView)
         }
         

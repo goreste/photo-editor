@@ -69,6 +69,7 @@ extension PhotoEditorViewController {
             context.setLineWidth(5.0)
             context.setStrokeColor(drawColor.cgColor)
             context.setBlendMode( CGBlendMode.normal)
+            context.interpolationQuality = .high
             // 4
             context.strokePath()
             // 5

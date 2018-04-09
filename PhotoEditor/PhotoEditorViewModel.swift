@@ -10,13 +10,17 @@ import UIKit
 import PromiseKit
 
 public final class PhotoEditorViewModel {
-    var backgroundImage: UIImage
+    var backgroundImage: UIImage?
+    var backgroundVideoUrl: URL?
     var avatarImage: UIImage
     var stickers : [UIImage] = []
     var gifUrls : [URL] = []
 
-    public init(backgroundImage: UIImage, avatarImage: UIImage, stickers: [UIImage], gifUrls: [URL]) {
+    var backgroundVideoMergedUrl: URL! //generated from image and avatar together
+
+    public init(backgroundImage: UIImage?, backgroundVideoUrl: URL?, avatarImage: UIImage, stickers: [UIImage], gifUrls: [URL]) {
         self.backgroundImage = backgroundImage
+        self.backgroundVideoUrl = backgroundVideoUrl
         self.avatarImage = avatarImage
         self.stickers = stickers
         self.gifUrls = gifUrls

@@ -14,27 +14,31 @@ public final class VideoExporter {
     public init() {
     }
     
-    public func createVideo(avatarImage: UIImage, onlyWithAvatar: Bool, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (String) -> Void) {
+    public func createVideo(avatarImage: UIImage, onlyWithAvatar: Bool, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (URL) -> Void) {
 //        guard let backgroundImage = imageView.image else { return }
         
+        print("Video URL: \(backgroundVideoUrl)")
         guard gifImageViews.count == videoUrls.count else { return }
         let mixComposition = AVMutableComposition()
 
-        
-        let assets = videoUrls.map({ AVURLAsset(url: $0 )})
-        guard var maxDuration = assets.sorted(by: { $0.duration > $1.duration }).map({ $0.duration }).first else { return }
-       
         let backgroundUrlAsset = AVURLAsset(url: backgroundVideoUrl)
         guard let backgroundAsset = backgroundUrlAsset.tracks(withMediaType: AVMediaType.video).first else { return }
         let renderSize = CGSize(width: backgroundAsset.naturalSize.width, height: backgroundAsset.naturalSize.height)
+        var maxDuration: CMTime = kCMTimeZero
         if backgroundUrlAsset.duration > maxDuration {
             maxDuration = backgroundUrlAsset.duration
         }
+
+        let assets = videoUrls.map({ AVURLAsset(url: $0 )})
+        if let maxDurationAssets = assets.sorted(by: { $0.duration > $1.duration }).map({ $0.duration }).first, maxDurationAssets > maxDuration  {
+            maxDuration = maxDurationAssets
+        }
+        
         
         var layerInstructions: [AVMutableVideoCompositionLayerInstruction] = []
         if onlyWithAvatar == false {
-            let backgroundScaleWidth = renderSize.width // / avatarImage.size.width
-            let backgroundScaleHeight = renderSize.height // / avatarImage.size.height
+            let backgroundScaleWidth = renderSize.width / avatarImage.size.width
+            let backgroundScaleHeight = renderSize.height / avatarImage.size.height
             
             print("avatarImageSize: \(avatarImage.size)  ---  bgSize: \(renderSize) -- \(backgroundScaleWidth)  \(backgroundScaleHeight)")
             layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
@@ -47,8 +51,9 @@ public final class VideoExporter {
                 
                 let gifTransform = gif.transform
                 let scaleByTransform = CGAffineTransform(scaleX: scaledByX, y: scaledByY)
+//                let translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * backgroundScaleWidth, y: gif.frame.origin.y * backgroundScaleHeight)
                 let translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * backgroundScaleWidth, y: gif.frame.origin.y * backgroundScaleHeight)
-                
+
                 let finalTransform = gifTransform.concatenating(scaleByTransform).concatenating(translatedBy)
                 print("gifTransform: \(gifTransform)")
                 print("scaleByTransform: \(scaleByTransform)")
@@ -60,9 +65,9 @@ public final class VideoExporter {
             }
         }
         
-        guard let track = createTrack(asset: backgroundUrlAsset, composition: mixComposition, maxDuration: Float(maxDuration.value), transform: CGAffineTransform(scaleX: 1, y: 1)) else { return }
-        let instruction = createLayerInstruction(track: track, transform: CGAffineTransform(scaleX: 1, y: 1))
-        layerInstructions.append(instruction)
+        guard let backgroundTrack = createTrack(asset: backgroundUrlAsset, composition: mixComposition, maxDuration: Float(maxDuration.value), transform: CGAffineTransform(scaleX: 1, y: 1)) else { return }
+        let backgroundInstruction = createLayerInstruction(track: backgroundTrack, transform: CGAffineTransform(scaleX: 1, y: 1))
+        layerInstructions.append(backgroundInstruction)
 
 //        let renderSize = CGSize(width: backgroundImage.size.width * UIScreen.main.scale, height: backgroundImage.size.height * UIScreen.main.scale)
 
@@ -76,15 +81,15 @@ public final class VideoExporter {
         mainComposition.renderSize = renderSize
 
         if onlyWithAvatar {
-            addOverlayImage(image: UIImage(named: "avatar")!, composition: mainComposition, size: renderSize)
+            addOverlayImage(image: avatarImage, composition: mainComposition, size: renderSize)
         }
-        exportVideo(composition: mixComposition, videoComposition: mainComposition, completion: completion)
+        exportVideo(composition: mixComposition, onlyWithAvatar: onlyWithAvatar, videoComposition: mainComposition, completion: completion)
     }
     
     func addOverlayImage(image: UIImage, composition: AVMutableVideoComposition, size: CGSize) {
         let overlayLayer = CALayer()
         overlayLayer.contents = image.cgImage
-        overlayLayer.frame = CGRect(x: size.width / 2 - image.size.width / 2, y: size.height / 2 - image.size.height, width: image.size.width, height: image.size.height)
+        overlayLayer.frame = CGRect(x: size.width / 2 - image.size.width / 2, y: size.height / 2 - image.size.height / 2, width: image.size.width, height: image.size.height)
         overlayLayer.masksToBounds = true
         overlayLayer.zPosition = 0
         overlayLayer.contentsGravity = kCAGravityResizeAspectFill
@@ -135,10 +140,14 @@ extension VideoExporter {
         return layerInstruction
     }
     
-    func exportVideo(composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, completion: @escaping (String) -> Void) {
+    func exportVideo(composition: AVMutableComposition, onlyWithAvatar: Bool, videoComposition: AVMutableVideoComposition, completion: @escaping (URL) -> Void) {
         if let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first {
             /// create a path to the video file
-            let completeMoviePath = URL(fileURLWithPath: documentsPath).appendingPathComponent("videoMerged.m4v")
+            var nameVideo = "videoWithAvatar.mp4"
+            if onlyWithAvatar ==  false {
+                nameVideo = "finalVideo.mp4"
+            }
+            let completeMoviePath = URL(fileURLWithPath: documentsPath).appendingPathComponent(nameVideo)
             
             let fileManager = FileManager.default
             if fileManager.fileExists(atPath: completeMoviePath.path) {
@@ -167,8 +176,10 @@ extension VideoExporter {
                     }
                     
                 case .completed:
-                    completion(completeMoviePath.path)
-
+                    print("finished \(completeMoviePath.lastPathComponent)")
+                    DispatchQueue.main.async {
+                        completion(completeMoviePath)
+                    }
                 default:
                     print("finished \(completeMoviePath)")
                 }

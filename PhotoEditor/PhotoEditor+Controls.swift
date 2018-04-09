@@ -114,26 +114,42 @@ extension PhotoEditorViewController {
             }
         }
         
-        guard var imageWithItems = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
-        if let itemsImage = self.canvasImageView.image, let imageItems = ImageUtil().mergeImages(backgroundImage: imageWithItems, overImage: itemsImage){
-            imageWithItems = imageItems
+        var avatarImage = viewModel.avatarImage
+        if let itemsImage = self.canvasImageView.image, let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: itemsImage){
+            avatarImage = imageItems
         }
-        
-        GifExporter().exportAnimatedGif(image: imageWithItems)
-            .then { backgroundGifUrl -> Promise<URL> in
-                return GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
-            }.then { [weak self] backgroundUrl -> Promise<[URL]> in
-                guard let `self` = self else { return Promise(error: Error.returnIsNil)}
-                self.backgroundVideoUrl = backgroundUrl
-                return self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
-            }.done { [weak self] gifTempVideoUrls -> Void in
-                guard let `self` = self else { return }
-                let image = self.canvasView.toImage()
-                self.photoEditorDelegate?.doneEditing(image: image, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: self.backgroundVideoUrl)
-                self.dismiss(animated: true, completion: nil)
-            }.catch { error in
-                print("error while creating temp videos: \(error)")
+
+        if var backgroundImage = viewModel.backgroundImage { // create a video with background static image
+            print("creating video with background image")
+
+            GifExporter().exportAnimatedGif(image: backgroundImage)
+                .then { backgroundGifUrl -> Promise<URL> in
+                    return GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
+                }.then { [weak self] backgroundUrl -> Promise<[URL]> in
+                    guard let `self` = self else { return Promise(error: Error.returnIsNil)}
+                    self.viewModel.backgroundVideoMergedUrl = backgroundUrl
+                    return self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+                }.done { [weak self] gifTempVideoUrls -> Void in
+                    guard let `self` = self else { return }
+                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: self.viewModel.backgroundVideoMergedUrl)
+                    self.dismiss(animated: true, completion: nil)
+                }.catch { error in
+                    print("error while creating temp videos: \(error)")
+            }
+        }else if let backgroundVideoUrl = viewModel.backgroundVideoUrl { // there is already a video as background
+            print("creating video with background video")
+            
+            self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+                .done {  [weak self] gifTempVideoUrls in
+                    guard let `self` = self else { return }
+                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: backgroundVideoUrl)
+                    self.dismiss(animated: true, completion: nil)
+                }
+                .catch { error in
+                    print("error while creating temp videos: \(error)")
+            }
         }
+        //        guard var imageWithItems = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
     }
     
     

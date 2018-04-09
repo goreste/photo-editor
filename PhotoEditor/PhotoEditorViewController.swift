@@ -64,10 +64,11 @@ public final class PhotoEditorViewController: UIViewController {
     var activeTextView: UITextView?
     var imageViewToPan: UIImageView?
     var isTyping: Bool = false
-    var backgroundVideoUrl: URL!
     
     var stickersViewController: StickersViewController!
 
+    var avatarImageView: UIImageView!
+    
     //Register Custom font before we load XIB
     public override func loadView() {
         registerFont()
@@ -76,8 +77,16 @@ public final class PhotoEditorViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        self.setImageView(image: viewModel.backgroundImage)
         
+        var image = viewModel.avatarImage
+        if let backgroundImage = viewModel.backgroundImage {
+            image = backgroundImage
+        }
+        self.setImageView(image: image)
+
+        avatarImageView = UIImageView(image: viewModel.avatarImage)
+        self.imageView.addSubview(avatarImageView)
+
         deleteView.layer.cornerRadius = deleteView.bounds.height / 2
         deleteView.layer.borderWidth = 2.0
         deleteView.layer.borderColor = UIColor.white.cgColor
