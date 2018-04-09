@@ -80,7 +80,7 @@ extension PhotoEditorViewController: StickersViewControllerDelegate {
         self.canvasImageView.subviews.forEach { imageView in
             if imageView.isKind(of: GIFImageView.classForCoder()) {
                 if imageView.frame.size == CGSize.zero {
-                    imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: imageView.intrinsicContentSize.width / 3, height: imageView.intrinsicContentSize.height / 3)
+                    imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: imageView.intrinsicContentSize.width, height: imageView.intrinsicContentSize.height)
                 }
             }
         }

@@ -14,10 +14,8 @@ public final class VideoExporter {
     public init() {
     }
     
-    public func createVideo(avatarImage: UIImage, onlyWithAvatar: Bool, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (URL) -> Void) {
-//        guard let backgroundImage = imageView.image else { return }
-        
-        print("Video URL: \(backgroundVideoUrl)")
+    public func createVideo(avatarImageView: UIImageView, onlyWithAvatar: Bool, gifImageViews: [GIFImageView], videoUrls: [URL], backgroundVideoUrl: URL, completion: @escaping (URL) -> Void) {
+        guard let avatarImage = avatarImageView.image else { return }
         guard gifImageViews.count == videoUrls.count else { return }
         let mixComposition = AVMutableComposition()
 
@@ -28,6 +26,7 @@ public final class VideoExporter {
         if backgroundUrlAsset.duration > maxDuration {
             maxDuration = backgroundUrlAsset.duration
         }
+//        guard let avatarSize = avatarImage.suitableSize(widthLimit: renderSize.width) else { return }
 
         let assets = videoUrls.map({ AVURLAsset(url: $0 )})
         if let maxDurationAssets = assets.sorted(by: { $0.duration > $1.duration }).map({ $0.duration }).first, maxDurationAssets > maxDuration  {
@@ -37,28 +36,32 @@ public final class VideoExporter {
         
         var layerInstructions: [AVMutableVideoCompositionLayerInstruction] = []
         if onlyWithAvatar == false {
-            let backgroundScaleWidth = renderSize.width / avatarImage.size.width
-            let backgroundScaleHeight = renderSize.height / avatarImage.size.height
+
+            let scaleWidth = renderSize.width / avatarImageView.frame.width
+            let scaleHeight = renderSize.height / avatarImageView.frame.height
             
-            print("avatarImageSize: \(avatarImage.size)  ---  bgSize: \(renderSize) -- \(backgroundScaleWidth)  \(backgroundScaleHeight)")
+            print("avatarImageSize: \(avatarImageView.frame)  ---  bgSize: \(renderSize) -- \(scaleWidth)  \(scaleHeight)")
             layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
                 let gif = gifImageViews[index]
-                
-                let scaledByX = gif.frame.width / gif.intrinsicContentSize.width
-                let scaledByY = gif.frame.height / gif.intrinsicContentSize.height
-                
-                print("\n\ngif: \(gif.frame) \(gif.intrinsicContentSize) \(scaledByX) \(scaledByY)")
+
+
+                print("\n\ngif: \(gif.frame) \(scaledByX) \(scaledByY)")
                 
                 let gifTransform = gif.transform
-                let scaleByTransform = CGAffineTransform(scaleX: scaledByX, y: scaledByY)
-//                let translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * backgroundScaleWidth, y: gif.frame.origin.y * backgroundScaleHeight)
-                let translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * backgroundScaleWidth, y: gif.frame.origin.y * backgroundScaleHeight)
+                let scaleByTransform = CGAffineTransform(scaleX: scaleWidth, y: scaleHeight)
+//                var scaleByTransform = CGAffineTransform(scaleX: byX, y: byY)
+//                if gifTransform.a != 1.0 || gifTransform.d != 1.0 {
+//                    let scaleX = gifTransform.a * scaledByX
+//                    let scaleY = gifTransform.d * scaledByY
+//                    scaleByTransform = CGAffineTransform(scaleX: scaleX, y: scaleY )
+//                }
+                let translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * scaleWidth, y: gif.frame.origin.y * scaleHeight)
 
                 let finalTransform = gifTransform.concatenating(scaleByTransform).concatenating(translatedBy)
-                print("gifTransform: \(gifTransform)")
-                print("scaleByTransform: \(scaleByTransform)")
-                print("scaleByTransform: \(translatedBy)")
-                print("translatedBy: \(finalTransform)\n\n")
+                print("\ngifTransform: \(gifTransform)")
+                print("\nscaleByTransform: \(scaleByTransform)")
+                print("\ntranslatedBy: \(translatedBy)")
+                print("\nfinalTransform: \(finalTransform)\n\n")
                 
                 guard let track = createTrack(asset: urlAsset, composition: mixComposition, maxDuration: Float(maxDuration.value), transform: finalTransform) else { return nil }
                 return createLayerInstruction(track: track, transform: finalTransform)
@@ -81,25 +84,26 @@ public final class VideoExporter {
         mainComposition.renderSize = renderSize
 
         if onlyWithAvatar {
-            addOverlayImage(image: avatarImage, composition: mainComposition, size: renderSize)
+            addOverlayImage(avatarImage: avatarImage, composition: mainComposition, size: renderSize)
         }
         exportVideo(composition: mixComposition, onlyWithAvatar: onlyWithAvatar, videoComposition: mainComposition, completion: completion)
     }
     
-    func addOverlayImage(image: UIImage, composition: AVMutableVideoComposition, size: CGSize) {
-        let overlayLayer = CALayer()
-        overlayLayer.contents = image.cgImage
-        overlayLayer.frame = CGRect(x: size.width / 2 - image.size.width / 2, y: size.height / 2 - image.size.height / 2, width: image.size.width, height: image.size.height)
-        overlayLayer.masksToBounds = true
-        overlayLayer.zPosition = 0
-        overlayLayer.contentsGravity = kCAGravityResizeAspectFill
+    func addOverlayImage(avatarImage: UIImage, composition: AVMutableVideoComposition, size: CGSize) {
+        guard let avatarSize = avatarImage.suitableSize(widthLimit: size.width) else { return }
+        let avatarLayer = CALayer()
+        avatarLayer.contents = avatarImage.cgImage
+        avatarLayer.frame = CGRect(x: size.width / 2 - avatarSize.width / 2, y: size.height / 2 - avatarSize.height / 2, width: avatarSize.width, height: avatarSize.height)
+        avatarLayer.masksToBounds = true
+        avatarLayer.zPosition = 0
+        avatarLayer.contentsGravity = kCAGravityResizeAspectFill
         
         let parentLayer = CALayer()
         let videoLayer = CALayer()
         parentLayer.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         videoLayer.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         parentLayer.addSublayer(videoLayer)
-        parentLayer.addSublayer(overlayLayer)
+        parentLayer.addSublayer(avatarLayer)
         
         composition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: videoLayer, in: parentLayer)
     }
