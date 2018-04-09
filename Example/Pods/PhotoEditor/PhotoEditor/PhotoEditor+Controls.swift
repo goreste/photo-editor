@@ -103,6 +103,7 @@ extension PhotoEditorViewController {
     }
     
     @IBAction func continueButtonPressed(_ sender: Any) {
+        self.photoEditorDelegate?.photoEditorStarCreatingVideo()
         let gifImageViews = self.canvasImageView.subviews.filter({ $0.isKind(of: GIFImageView.classForCoder()) }) as? [GIFImageView] ?? []
         var gifRemoteUrls: [URL] = []
         self.canvasImageView.subviews.forEach { view in
@@ -110,48 +111,52 @@ extension PhotoEditorViewController {
                 if view.tag < viewModel.gifUrls.count {
                     gifRemoteUrls.append(viewModel.gifUrls[view.tag])
                 }
-                view.removeFromSuperview()
             }
         }
         
 
-//        let size = viewModel.avatarImage.suitableSize(widthLimit: self.canvasImageView.frame.width)!
         var avatarImage = viewModel.avatarImage
         if let itemsImage = self.canvasImageView.image, let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: itemsImage){
             avatarImage = imageItems
         }
 
         if let backgroundVideoUrl = viewModel.backgroundVideoUrl {// there is already a video as background
-            print("creating video with background video")
-            
-            self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
-                .done {  [weak self] gifTempVideoUrls in
+            exportVideo(avatarImage: avatarImage, editorViewSize: self.canvasImageView.frame.size, gifImageViews: gifImageViews, gifRemoteUrls: gifRemoteUrls, backgroundVideoUrl: backgroundVideoUrl)
+                .done { [weak self] finalVideoUrl in
                     guard let `self` = self else { return }
-                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: backgroundVideoUrl)
-                    self.dismiss(animated: true, completion: nil)
-                }
-                .catch { error in
-                    print("error while creating temp videos: \(error)")
+                    self.photoEditorDelegate?.photoEditor(videoCreatedAt: finalVideoUrl)
+                }.catch { error in
+                    print("Error exporting video: \(error)")
             }
         }else if let backgroundImage = viewModel.backgroundImage {// create a video with background static image
-            print("creating video with background image")
             
             GifExporter().exportAnimatedGif(image: backgroundImage)
                 .then { backgroundGifUrl -> Promise<URL> in
                     return GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
-                }.then { [weak self] backgroundUrl -> Promise<[URL]> in
+                }.then { [weak self] backgroundUrl -> Promise<URL> in
                     guard let `self` = self else { return Promise(error: Error.returnIsNil)}
-                    self.viewModel.backgroundVideoMergedUrl = backgroundUrl
-                    return self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
-                }.done { [weak self] gifTempVideoUrls -> Void in
+                    return self.exportVideo(avatarImage: avatarImage, editorViewSize: self.canvasImageView.frame.size, gifImageViews: gifImageViews, gifRemoteUrls: gifRemoteUrls, backgroundVideoUrl: backgroundUrl)
+                }.done { [weak self] finalVideoUrl -> Void in
                     guard let `self` = self else { return }
-                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: self.viewModel.backgroundVideoMergedUrl)
+                    self.photoEditorDelegate?.photoEditor(videoCreatedAt: finalVideoUrl)
                     self.dismiss(animated: true, completion: nil)
                 }.catch { error in
                     print("error while creating temp videos: \(error)")
             }
         }
-        //        guard var imageWithItems = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
+    }
+    
+    func exportVideo(avatarImage: UIImage, editorViewSize: CGSize, gifImageViews: [GIFImageView], gifRemoteUrls: [URL], backgroundVideoUrl: URL) -> Promise<URL> {
+        return self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+            .then { gifTempVideoUrls -> Promise<URL> in
+                VideoExporter.shared.createVideo(avatarImage: avatarImage, editorViewSize: editorViewSize, onlyWithAvatar: true, gifImageViews: gifImageViews, videoUrls: gifTempVideoUrls, backgroundVideoUrl: backgroundVideoUrl)
+            }
+            .then { videoWithAvatarURL -> Promise<URL> in
+                VideoExporter.shared.createVideo(avatarImage: avatarImage, editorViewSize: editorViewSize, onlyWithAvatar: false, backgroundVideoUrl: videoWithAvatarURL)
+            }
+//            .done { finalVideoURL -> Promise<URL> in
+//                return Promise.value(finalVideoURL)
+//            }
     }
     
     
@@ -189,6 +194,7 @@ extension PhotoEditorViewController {
 
 extension PhotoEditorViewController {
     enum Error: Swift.Error {
+        case selfIsNil
         case returnIsNil
     }
 }

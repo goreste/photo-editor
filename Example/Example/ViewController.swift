@@ -11,6 +11,7 @@ import PhotoEditor
 import Gifu
 import AVFoundation
 import AssetsLibrary
+import SVProgressHUD
 
 class ViewController: UIViewController {
 
@@ -93,35 +94,18 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: PhotoEditorDelegate {
-    func doneEditing(avatarImage: UIImage, gifImageViews: [GIFImageView], gifVideosUrl: [URL], backgroundVideoUrl: URL) {
-        saveVideoButton.isHidden = true
-        
-        imageView.subviews.forEach { view in
-            view.removeFromSuperview()
+    func photoEditorStarCreatingVideo() {
+        SVProgressHUD.show()
+    }
+    
+    func photoEditor(videoCreatedAt url: URL) {
+        self.videoPath = url.path
+        if self.videoPath == "" {
+            self.saveVideoButton.isHidden = true
+        }else{
+            self.saveVideoButton.isHidden = false
         }
-        
-        imageView.image = avatarImage
-        let size = avatarImage.suitableSize(widthLimit: UIScreen.main.bounds.width)
-        imageViewHeightConstraint.constant = (size?.height)!
-        
-        gifImageViews.forEach { [weak self] gifImageView in
-            self?.imageView.addSubview(gifImageView)
-        }
-        
-        //TODO: create video with video in background and avatar transparent over it
-        //then create video with the video created above and the gifs and stickers over it
-        
-        VideoExporter().createVideo(avatarImageView: imageView, onlyWithAvatar: true, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: backgroundVideoUrl) { [weak self] videoWithAvatarURL in
-            guard let `self` = self else { return }
-            VideoExporter().createVideo(avatarImageView: self.imageView, onlyWithAvatar: false, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: videoWithAvatarURL) { finalVideoURL in
-                self.videoPath = finalVideoURL.path
-                if self.videoPath == "" {
-                    self.saveVideoButton.isHidden = true
-                }else{
-                    self.saveVideoButton.isHidden = false
-                }
-            }
-        }
+        SVProgressHUD.dismiss()
     }
     
     func canceledEditing() {
