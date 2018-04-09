@@ -119,9 +119,21 @@ extension PhotoEditorViewController {
             avatarImage = imageItems
         }
 
-        if var backgroundImage = viewModel.backgroundImage { // create a video with background static image
+        if let backgroundVideoUrl = viewModel.backgroundVideoUrl {// there is already a video as background
+            print("creating video with background video")
+            
+            self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+                .done {  [weak self] gifTempVideoUrls in
+                    guard let `self` = self else { return }
+                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: backgroundVideoUrl)
+                    self.dismiss(animated: true, completion: nil)
+                }
+                .catch { error in
+                    print("error while creating temp videos: \(error)")
+            }
+        }else if let backgroundImage = viewModel.backgroundImage {// create a video with background static image
             print("creating video with background image")
-
+            
             GifExporter().exportAnimatedGif(image: backgroundImage)
                 .then { backgroundGifUrl -> Promise<URL> in
                     return GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
@@ -134,18 +146,6 @@ extension PhotoEditorViewController {
                     self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: self.viewModel.backgroundVideoMergedUrl)
                     self.dismiss(animated: true, completion: nil)
                 }.catch { error in
-                    print("error while creating temp videos: \(error)")
-            }
-        }else if let backgroundVideoUrl = viewModel.backgroundVideoUrl { // there is already a video as background
-            print("creating video with background video")
-            
-            self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
-                .done {  [weak self] gifTempVideoUrls in
-                    guard let `self` = self else { return }
-                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: backgroundVideoUrl)
-                    self.dismiss(animated: true, completion: nil)
-                }
-                .catch { error in
                     print("error while creating temp videos: \(error)")
             }
         }

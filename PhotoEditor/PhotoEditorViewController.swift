@@ -83,6 +83,7 @@ public final class PhotoEditorViewController: UIViewController {
             image = backgroundImage
         }
         self.setImageView(image: image)
+        imageView.backgroundColor = .red
 
         avatarImageView = UIImageView(image: viewModel.avatarImage)
         self.imageView.addSubview(avatarImageView)

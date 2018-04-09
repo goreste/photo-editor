@@ -114,30 +114,42 @@ extension PhotoEditorViewController {
             }
         }
         
-        guard let image = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
-        guard let imageWithItems = ImageUtil().mergeImages(backgroundImage: image, overImage: self.canvasImageView.image) else { return }
-
-        GifExporter().exportAnimatedGif(image: imageWithItems)
-            .done { backgroundGifUrl in
-                GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
-                    .done { [weak self] backgroundUrl in
-                        guard let `self` = self else { return }
-                        self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
-                            .done { gifTempVideoUrls in
-                                let image = self.canvasView.toImage()
-                                self.photoEditorDelegate?.doneEditing(image: image, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: backgroundUrl)
-                                self.dismiss(animated: true, completion: nil)
-                            }
-                            .catch { error in
-                                print("error while creating temp videos: \(error)")
-                        }
-                    }.catch { error in
-                        print("error while converting background gif into video: \(error)")
-                }
-            }.catch { error in
-                print("error while converting image into gif: \(error)")
+        var avatarImage = viewModel.avatarImage
+        if let itemsImage = self.canvasImageView.image, let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: itemsImage){
+            avatarImage = imageItems
         }
-        
+
+        if var backgroundImage = viewModel.backgroundImage { // create a video with background static image
+            print("creating video with background image")
+
+            GifExporter().exportAnimatedGif(image: backgroundImage)
+                .then { backgroundGifUrl -> Promise<URL> in
+                    return GifExporter().convertGifIntoVideo(remoteUrl: backgroundGifUrl)
+                }.then { [weak self] backgroundUrl -> Promise<[URL]> in
+                    guard let `self` = self else { return Promise(error: Error.returnIsNil)}
+                    self.viewModel.backgroundVideoMergedUrl = backgroundUrl
+                    return self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+                }.done { [weak self] gifTempVideoUrls -> Void in
+                    guard let `self` = self else { return }
+                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: self.viewModel.backgroundVideoMergedUrl)
+                    self.dismiss(animated: true, completion: nil)
+                }.catch { error in
+                    print("error while creating temp videos: \(error)")
+            }
+        }else if let backgroundVideoUrl = viewModel.backgroundVideoUrl { // there is already a video as background
+            print("creating video with background video")
+            
+            self.viewModel.getVideoTempUrls(remoteUrls: gifRemoteUrls)
+                .done {  [weak self] gifTempVideoUrls in
+                    guard let `self` = self else { return }
+                    self.photoEditorDelegate?.doneEditing(avatarImage: avatarImage, gifImageViews: gifImageViews, gifVideosUrl: gifTempVideoUrls, backgroundVideoUrl: backgroundVideoUrl)
+                    self.dismiss(animated: true, completion: nil)
+                }
+                .catch { error in
+                    print("error while creating temp videos: \(error)")
+            }
+        }
+        //        guard var imageWithItems = ImageUtil().mergeImages(backgroundImage: viewModel.backgroundImage, overImage: viewModel.avatarImage) else { return }
     }
     
     
@@ -171,4 +183,10 @@ extension PhotoEditorViewController {
         }
     }
     
+}
+
+extension PhotoEditorViewController {
+    enum Error: Swift.Error {
+        case returnIsNil
+    }
 }

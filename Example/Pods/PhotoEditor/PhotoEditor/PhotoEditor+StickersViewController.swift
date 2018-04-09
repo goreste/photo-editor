@@ -73,6 +73,10 @@ extension PhotoEditorViewController: StickersViewControllerDelegate {
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
+        if let avatarSize = viewModel.avatarImage.suitableSize(widthLimit: imageView.frame.width) {
+            avatarImageView.frame = CGRect(x: imageView.frame.width / 2 - avatarSize.width / 2, y: imageView.frame.height / 2 - avatarSize.height / 2, width: avatarSize.width, height: avatarSize.height)
+        }
+
         self.canvasImageView.subviews.forEach { imageView in
             if imageView.isKind(of: GIFImageView.classForCoder()) {
                 if imageView.frame.size == CGSize.zero {

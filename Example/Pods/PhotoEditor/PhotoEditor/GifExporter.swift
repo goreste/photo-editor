@@ -22,7 +22,7 @@ public final class GifExporter {
                 seal.reject(Error.urlIsNil)
                 return
             }
-            guard let imageData = UIImageJPEGRepresentation(image, 0.5) else {
+            guard let imageData = UIImageJPEGRepresentation(image, 1.0) else {
                 seal.reject(Error.urlIsNil)
                 return
             }
