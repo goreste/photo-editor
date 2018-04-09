@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8714A251207B9DAB00AAECEF /* test_02_1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 8714A250207B9DAB00AAECEF /* test_02_1.mp4 */; };
 		8733A7462077B1FE00800C50 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8733A7452077B1FE00800C50 /* AppDelegate.swift */; };
 		8733A7482077B1FE00800C50 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8733A7472077B1FE00800C50 /* ViewController.swift */; };
 		8733A74B2077B1FE00800C50 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8733A7492077B1FE00800C50 /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		0CD868902974D3B26E89575C /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
+		8714A250207B9DAB00AAECEF /* test_02_1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_02_1.mp4; sourceTree = "<group>"; };
 		8733A7422077B1FE00800C50 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8733A7452077B1FE00800C50 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8733A7472077B1FE00800C50 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 				8733A74E2077B20000800C50 /* LaunchScreen.storyboard */,
 				8733A7512077B20000800C50 /* Info.plist */,
 				8733A7AD2077BD0400800C50 /* gif4.gif */,
+				8714A250207B9DAB00AAECEF /* test_02_1.mp4 */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -156,6 +159,7 @@
 				8733A74D2077B20000800C50 /* Assets.xcassets in Resources */,
 				8733A7AE2077BD0400800C50 /* gif4.gif in Resources */,
 				8733A74B2077B1FE00800C50 /* Main.storyboard in Resources */,
+				8714A251207B9DAB00AAECEF /* test_02_1.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

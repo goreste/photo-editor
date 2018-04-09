@@ -43,21 +43,34 @@ public final class VideoExporter {
             print("avatarImageSize: \(avatarImageView.frame)  ---  bgSize: \(renderSize) -- \(scaleWidth)  \(scaleHeight)")
             layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
                 let gif = gifImageViews[index]
-
-
-                print("\n\ngif: \(gif.frame) \(scaledByX) \(scaledByY)")
                 
                 let gifTransform = gif.transform
+                let anchorPoint = gif.layer.anchorPoint
+                print(anchorPoint)
                 let scaleByTransform = CGAffineTransform(scaleX: scaleWidth, y: scaleHeight)
 //                var scaleByTransform = CGAffineTransform(scaleX: byX, y: byY)
-//                if gifTransform.a != 1.0 || gifTransform.d != 1.0 {
-//                    let scaleX = gifTransform.a * scaledByX
-//                    let scaleY = gifTransform.d * scaledByY
-//                    scaleByTransform = CGAffineTransform(scaleX: scaleX, y: scaleY )
-//                }
-                let translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * scaleWidth, y: gif.frame.origin.y * scaleHeight)
+                var translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * scaleWidth, y: gif.frame.origin.y * scaleHeight)
+                
+                if gifTransform.b != 0.0 || gifTransform.c != 0.0 {
+                    
+                    let b = translatedBy.b
+                    let c = translatedBy.c
+                    print("\(translatedBy)")
+                    translatedBy = translatedBy.concatenating(CGAffineTransform(translationX: -(gif.frame.width / 2 * scaleWidth), y: -(gif.frame.height / 2 * scaleHeight)))
+                    print("\(translatedBy)")
+                    translatedBy.b = 0.0
+                    translatedBy.c = 0.0
+                    print("\(translatedBy)")
+                    translatedBy = translatedBy.concatenating(CGAffineTransform(translationX: (gif.frame.width / 2 * scaleWidth), y: (gif.frame.height * scaleHeight)))
+                    print("\(translatedBy)")
+                    translatedBy.b = b
+                    translatedBy.c = c
+                    print("\(translatedBy)")
+//                    translatedBy = CGAffineTransform(translationX: (gif.frame.origin.x + gif.frame.width / 2) * scaleWidth, y: (gif.frame.origin.y + gif.frame.height) * scaleHeight)
+                }
 
                 let finalTransform = gifTransform.concatenating(scaleByTransform).concatenating(translatedBy)
+                
                 print("\ngifTransform: \(gifTransform)")
                 print("\nscaleByTransform: \(scaleByTransform)")
                 print("\ntranslatedBy: \(translatedBy)")

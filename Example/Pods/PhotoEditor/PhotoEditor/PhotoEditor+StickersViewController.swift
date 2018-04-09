@@ -81,6 +81,7 @@ extension PhotoEditorViewController: StickersViewControllerDelegate {
             if imageView.isKind(of: GIFImageView.classForCoder()) {
                 if imageView.frame.size == CGSize.zero {
                     imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: imageView.intrinsicContentSize.width, height: imageView.intrinsicContentSize.height)
+                    imageView.center = canvasImageView.center
                 }
             }
         }

@@ -114,6 +114,8 @@ extension PhotoEditorViewController {
             }
         }
         
+
+//        let size = viewModel.avatarImage.suitableSize(widthLimit: self.canvasImageView.frame.width)!
         var avatarImage = viewModel.avatarImage
         if let itemsImage = self.canvasImageView.image, let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: itemsImage){
             avatarImage = imageItems

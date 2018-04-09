@@ -15,6 +15,7 @@ import AssetsLibrary
 class ViewController: UIViewController {
 
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var saveVideoButton: UIButton!
     var videoPath = ""
 
@@ -27,7 +28,7 @@ class ViewController: UIViewController {
 
     func presentPhotoEditor(image: UIImage?) {
 //        guard let image = image else { return }
-        guard let backgroundImage = UIImage(named: "avatar") else { return }
+        guard let backgroundImage = UIImage(named: "backgroundImage") else { return }
         guard let avatarImage = UIImage(named: "avatar") else { return }
         var stickers: [UIImage] = []
         for i in 0...10 {
@@ -36,8 +37,10 @@ class ViewController: UIViewController {
             }
         }
         let gifUrls = FileUtils.scanGifFiles()
+        let videoUrl = FileUtils.scanFilesFor(fileExtension: "mp4").filter({ $0.path.contains("test") }).first
+
         
-        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: backgroundImage, avatarImage: avatarImage, stickers: stickers, gifUrls: gifUrls)
+        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: backgroundImage, backgroundVideoUrl: videoUrl, avatarImage: avatarImage, stickers: stickers, gifUrls: gifUrls)
         let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
         photoEditor.photoEditorDelegate = self
         photoEditor.viewModel = photoEditorViewModel
@@ -69,10 +72,11 @@ class ViewController: UIViewController {
     }
     
     @IBAction func pickImageButtonTapped(_ sender: Any) {
-        let picker = UIImagePickerController()
-        picker.delegate = self
-        picker.sourceType = .photoLibrary
-        present(picker, animated: true, completion: nil)
+        presentPhotoEditor(image: nil)
+//        let picker = UIImagePickerController()
+//        picker.delegate = self
+//        picker.sourceType = .photoLibrary
+//        present(picker, animated: true, completion: nil)
     }
     
     @IBAction func saveVideoToCameraRoll(_ sender: Any) {
@@ -89,25 +93,32 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: PhotoEditorDelegate {
-    func doneEditing(image: UIImage, gifImageViews: [GIFImageView], gifVideosUrl: [URL], backgroundVideoUrl: URL) {
+    func doneEditing(avatarImage: UIImage, gifImageViews: [GIFImageView], gifVideosUrl: [URL], backgroundVideoUrl: URL) {
         saveVideoButton.isHidden = true
         
         imageView.subviews.forEach { view in
             view.removeFromSuperview()
         }
         
-        imageView.image = image
+        imageView.image = avatarImage
+        let size = avatarImage.suitableSize(widthLimit: UIScreen.main.bounds.width)
+        imageViewHeightConstraint.constant = (size?.height)!
+        
         gifImageViews.forEach { [weak self] gifImageView in
             self?.imageView.addSubview(gifImageView)
         }
         
-        VideoExporter().createVideo(imageView: imageView, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: backgroundVideoUrl) { [weak self] videoPath in
-            DispatchQueue.main.async {
-                self?.videoPath = videoPath
-                if videoPath == "" {
-                    self?.saveVideoButton.isHidden = true
+        //TODO: create video with video in background and avatar transparent over it
+        //then create video with the video created above and the gifs and stickers over it
+        
+        VideoExporter().createVideo(avatarImageView: imageView, onlyWithAvatar: true, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: backgroundVideoUrl) { [weak self] videoWithAvatarURL in
+            guard let `self` = self else { return }
+            VideoExporter().createVideo(avatarImageView: self.imageView, onlyWithAvatar: false, gifImageViews: gifImageViews, videoUrls: gifVideosUrl, backgroundVideoUrl: videoWithAvatarURL) { finalVideoURL in
+                self.videoPath = finalVideoURL.path
+                if self.videoPath == "" {
+                    self.saveVideoButton.isHidden = true
                 }else{
-                    self?.saveVideoButton.isHidden = false
+                    self.saveVideoButton.isHidden = false
                 }
             }
         }

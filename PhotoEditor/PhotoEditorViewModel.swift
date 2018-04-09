@@ -16,8 +16,6 @@ public final class PhotoEditorViewModel {
     var stickers : [UIImage] = []
     var gifUrls : [URL] = []
 
-    var backgroundVideoMergedUrl: URL! //generated from image and avatar together
-
     public init(backgroundImage: UIImage?, backgroundVideoUrl: URL?, avatarImage: UIImage, stickers: [UIImage], gifUrls: [URL]) {
         self.backgroundImage = backgroundImage
         self.backgroundVideoUrl = backgroundVideoUrl
