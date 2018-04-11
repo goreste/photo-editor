@@ -49,8 +49,8 @@ public final class VideoExporter {
 
         let backgroundUrlAsset = AVURLAsset(url: backgroundVideoUrl)
         guard let backgroundAsset = backgroundUrlAsset.tracks(withMediaType: AVMediaType.video).first else { return Promise(error: Error.backgroundVideoUrlNil) }
-//        let renderSize = CGSize(width: backgroundAsset.naturalSize.width, height: backgroundAsset.naturalSize.height)
-        let renderSize = CGSize(width: editorViewSize.width, height: editorViewSize.height)
+        let renderSize = CGSize(width: backgroundAsset.naturalSize.width, height: backgroundAsset.naturalSize.height)
+//        let renderSize = CGSize(width: editorViewSize.width, height: editorViewSize.height)
         var maxDuration: CMTime = kCMTimeZero
         if backgroundUrlAsset.duration > maxDuration {
             maxDuration = backgroundUrlAsset.duration

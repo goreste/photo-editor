@@ -137,7 +137,7 @@ extension PhotoEditorViewController {
             avatarImage = imageItems
         }
         self.canvasImageView.subviews.forEach { view in
-            if view.isKind(of: UITextView.classForCoder()) {
+            if view.isKind(of: GIFImageView.classForCoder()) == false {
                 guard let tempImage = self.canvasImageView.screenshot(view: view) else { return }
                 guard let cgImage = tempImage.cgImage else { return }
                 
@@ -172,51 +172,11 @@ extension PhotoEditorViewController {
                 
                 
                 let ciImage = CIImage(cgImage: cgImage)
-//                let coreImage = ciImage.transformed(by: textView.transform).transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
-                let coreImage = ciImage.transformed(by: identity)//.transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
-                let imageFromCIImage = UIImage(ciImage: coreImage)//.imageFlippedForRightToLeftLayoutDirection()
-
-                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.size.width, height: view.frame.size.height)){
-                    avatarImage = imageItems
-                }
-            }else if view.isKind(of: UIView.classForCoder()) {
-                guard let stickerImage = self.canvasImageView.screenshot(view: view) else { return }
-                guard let cgImage = stickerImage.cgImage else { return }
-                
-                
-                let rotation = VideoExporter.shared.rotation(t: view.transform)
-                let xScale = VideoExporter.shared.xScale(t: view.transform)
-                let yScale = VideoExporter.shared.yScale(t: view.transform)
-                
-                let width = view.bounds.width * xScale
-                let height = view.bounds.height * yScale
-                
-                
-                let adjacent = width / 2
-                let opposite = height / 2
-                let hipotenuse = sqrt(pow(adjacent, 2) + pow(opposite, 2))
-                let thetaRad = acos((pow(hipotenuse, 2) + pow(adjacent, 2) - pow(opposite, 2)) / (2 * hipotenuse * adjacent))
-                let angleRad: CGFloat = rotation
-                
-                let widthOffset = cos(angleRad - thetaRad) * hipotenuse
-                let heightOffset = sin(angleRad - thetaRad) * hipotenuse
-                let offsetPointOrigin = CGPoint(x: view.center.x + heightOffset, y: view.center.y - widthOffset)
-                
-                let sizeScaled = CGSize(width: xScale, height: yScale)
-                
-                var identity = CGAffineTransform.identity
-                identity = identity.concatenating(CGAffineTransform(scaleX: sizeScaled.width, y: sizeScaled.height))
-                identity = identity.concatenating(CGAffineTransform(rotationAngle: -rotation))
-                identity = identity.concatenating(CGAffineTransform(translationX: offsetPointOrigin.x, y: offsetPointOrigin.y))
-                
-                
-                let ciImage = CIImage(cgImage: cgImage)
                 let coreImage = ciImage.transformed(by: identity)
                 let imageFromCIImage = UIImage(ciImage: coreImage)
                 
-                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.size.width, height: view.frame.size.height)){
-                    avatarImage = imageItems
-                }
+                guard let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.size.width, height: view.frame.size.height)) else { return }
+                avatarImage = imageItems
             }
         }
 
