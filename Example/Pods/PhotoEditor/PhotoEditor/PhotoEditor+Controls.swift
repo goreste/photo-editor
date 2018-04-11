@@ -28,7 +28,6 @@ extension PhotoEditorViewController {
      //MARK: Top Toolbar
     @IBAction func cancelButtonTapped(_ sender: Any) {
         photoEditorDelegate?.canceledEditing()
-        self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func cropButtonTapped(_ sender: UIButton) {
@@ -65,10 +64,12 @@ extension PhotoEditorViewController {
         textView.layer.shadowOffset = CGSize(width: 1.0, height: 0.0)
         textView.layer.shadowOpacity = 0.2
         textView.layer.shadowRadius = 1.0
-        textView.layer.backgroundColor = UIColor.clear.cgColor
+        textView.layer.backgroundColor = UIColor.red.cgColor
         textView.autocorrectionType = .no
         textView.isScrollEnabled = false
         textView.delegate = self
+        textView.backgroundColor = .red
+        textView.adjustsFontForContentSizeCategory = true
         self.canvasImageView.addSubview(textView)
         addGestures(view: textView)
         textView.becomeFirstResponder()
@@ -132,13 +133,31 @@ extension PhotoEditorViewController {
         self.canvasImageView.subviews.forEach { textView in
             if textView.isKind(of: UITextView.classForCoder()) {
                 guard let tempImage = self.canvasImageView.screenshot(view: textView) else { return }
+//                guard let tempImageSize = tempImage.suitableSize(widthLimit: self.canvasImageView.frame.size.width) else { return }
                 guard let cgImage = tempImage.cgImage else { return }
                 
-                let ciImage = CIImage(cgImage: cgImage)
-                let coreImage = ciImage.transformed(by: textView.transform).transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
-                let imageFromCIImage = UIImage(ciImage: coreImage).imageFlippedForRightToLeftLayoutDirection()
+//                finalTransform = finalTransform.concatenating(CGAffineTransform(scaleX: gifSizeScaled.width, y: gifSizeScaled.height))
+//                finalTransform = finalTransform.concatenating(CGAffineTransform(rotationAngle: gifRotation))
+//                finalTransform = finalTransform.concatenating(CGAffineTransform(translationX: offsetPointOrigin.x * scaleWidth, y: offsetPointOrigin.y * scaleHeight))
 
-                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: textView.frame){
+                let rotation = VideoExporter.shared.rotation(t: textView.transform)
+                let xScale = VideoExporter.shared.xScale(t: textView.transform)
+                let yScale = VideoExporter.shared.yScale(t: textView.transform)
+                
+                var identity = CGAffineTransform.identity
+                identity = identity.concatenating(CGAffineTransform(scaleX: xScale, y: yScale))
+                identity = identity.concatenating(CGAffineTransform(rotationAngle: -rotation))
+                identity = identity.concatenating(CGAffineTransform(translationX: textView.frame.origin.x * xScale, y: textView.frame.origin.y * yScale))
+
+                print(textView.transform)
+                print(identity)
+                
+                let ciImage = CIImage(cgImage: cgImage)
+//                let coreImage = ciImage.transformed(by: textView.transform).transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
+                let coreImage = ciImage.transformed(by: identity)//.transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
+                let imageFromCIImage = UIImage(ciImage: coreImage)//.imageFlippedForRightToLeftLayoutDirection()
+
+                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: textView.frame.origin.x, y: textView.frame.origin.y, width: tempImage.size.width, height: tempImage.size.height)){
                     avatarImage = imageItems
                 }
             }
