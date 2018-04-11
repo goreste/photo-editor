@@ -149,7 +149,7 @@ public final class VideoExporter {
         avatarLayer.frame = CGRect(x: size.width / 2 - avatarSize.width / 2, y: size.height / 2 - avatarSize.height / 2, width: avatarSize.width, height: avatarSize.height)
         avatarLayer.masksToBounds = true
         avatarLayer.zPosition = 0
-        avatarLayer.contentsGravity = kCAGravityResizeAspectFill
+//        avatarLayer.contentsGravity = kCAGravityResizeAspectFill
         
         let parentLayer = CALayer()
         let videoLayer = CALayer()

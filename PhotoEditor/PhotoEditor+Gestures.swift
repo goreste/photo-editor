@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Gifu
 
 extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
     
@@ -206,13 +207,15 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
         let pointToSuperView = recognizer.location(in: self.view)
 
 
-        if view is UITextView {
-            view.center = CGPoint(x: view.center.x + recognizer.translation(in: canvasImageView).x,
-                                  y: view.center.y + recognizer.translation(in: canvasImageView).y)
-             recognizer.setTranslation(CGPoint.zero, in: canvasImageView)
-        }else{
+//        if view is UITextView {
+//        }
+        if view is GIFImageView {
             view.transform.tx = pointToSuperView.x - canvasImageView.frame.width / 2 //+ view.frame.width / 2
             view.transform.ty = pointToSuperView.y - canvasImageView.frame.height / 2 //+ view.frame.height / 2
+        }else{
+            view.center = CGPoint(x: view.center.x + recognizer.translation(in: canvasImageView).x,
+                                  y: view.center.y + recognizer.translation(in: canvasImageView).y)
+            recognizer.setTranslation(CGPoint.zero, in: canvasImageView)
         }
         
         
