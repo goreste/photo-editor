@@ -6,6 +6,6 @@ target 'Example' do
   use_frameworks!
 
   # Pods for Example
-  pod 'PhotoEditor', :git => 'https://github.com/goreste/photo-editor.git', :tag => '0.9.1'
+  pod 'PhotoEditor', :git => 'https://github.com/goreste/photo-editor.git', :tag => '0.9.2'
   pod 'SVProgressHUD'
 end
