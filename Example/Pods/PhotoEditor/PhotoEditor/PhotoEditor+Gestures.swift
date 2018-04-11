@@ -65,6 +65,8 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
                 textView.setNeedsDisplay()
             } else {
                 view.transform = view.transform.scaledBy(x: recognizer.scale, y: recognizer.scale)
+                let hipotenuse = sqrt(pow(view.frame.width, 2) + pow(view.frame.height, 2))
+                print(hipotenuse, canvasImageView.frame.width, view.frame.width, view.frame.height)
             }
             recognizer.scale = 1
         }
@@ -158,6 +160,13 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
      delete the view if it's inside the delete view
      Snap the view back if it's out of the canvas
      */
+    func xScale(t: CGAffineTransform) -> CGFloat {
+        return sqrt(t.a * t.a + t.c * t.c)
+    }
+    
+    func yScale(t: CGAffineTransform) -> CGFloat {
+        return sqrt(t.b * t.b + t.d * t.d)
+    }
 
     func moveView(view: UIView, recognizer: UIPanGestureRecognizer)  {
         
@@ -167,11 +176,17 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
         view.superview?.bringSubview(toFront: view)
         let pointToSuperView = recognizer.location(in: self.view)
 
-        view.center = CGPoint(x: view.center.x + recognizer.translation(in: canvasImageView).x,
-                              y: view.center.y + recognizer.translation(in: canvasImageView).y)
+//        view.center = CGPoint(x: view.center.x + recognizer.translation(in: canvasImageView).x,
+//                              y: view.center.y + recognizer.translation(in: canvasImageView).y)
         
-        recognizer.setTranslation(CGPoint.zero, in: canvasImageView)
+        view.transform.tx = pointToSuperView.x - canvasImageView.frame.width / 2 //+ view.frame.width / 2
+        view.transform.ty = pointToSuperView.y - canvasImageView.frame.height / 2 //+ view.frame.height / 2
         
+//        print(view.transform.tx + (canvasImageView.frame.width / 2), view.transform.ty + (canvasImageView.frame.height / 2))
+
+        let hipotenuse = sqrt(pow(view.frame.width, 2) + pow(view.frame.height, 2))
+        print(hipotenuse, canvasImageView.frame.width, view.frame.width, view.frame.height)
+
         if let previousPoint = lastPanPoint {
             //View is going into deleteView
             if deleteView.frame.contains(pointToSuperView) && !deleteView.frame.contains(previousPoint) {
@@ -212,7 +227,6 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
                 UIView.animate(withDuration: 0.3, animations: {
                     view.center = self.canvasImageView.center
                 })
-                
             }
         }
     }

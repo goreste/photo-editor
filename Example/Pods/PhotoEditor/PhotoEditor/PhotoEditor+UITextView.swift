@@ -32,7 +32,9 @@ extension PhotoEditorViewController: UITextViewDelegate {
                         textView.transform = CGAffineTransform.identity
                         textView.center = CGPoint(x: UIScreen.main.bounds.width / 2,
                                                   y:  UIScreen.main.bounds.height / 5)
-        }, completion: nil)
+        }, completion: { _ in
+            print("animation completed")
+        })
         
     }
     

@@ -22,6 +22,11 @@ extension VideoExporter {
     }
 }
 
+extension FloatingPoint {
+    var degreesToRadians: Self { return self * .pi / 180 }
+    var radiansToDegrees: Self { return self * 180 / .pi }
+}
+
 public final class VideoExporter {
     static let shared = VideoExporter()
     
@@ -30,7 +35,7 @@ public final class VideoExporter {
 
     public init() {
     }
-    
+
     public func createVideo(avatarImage: UIImage, editorViewSize: CGSize, onlyWithAvatar: Bool, gifImageViews: [GIFImageView] = [], videoUrls: [URL] = [], backgroundVideoUrl: URL) -> Promise<URL> {
         if videoUrls.isEmpty == false {
             self.videoUrls = videoUrls
@@ -44,7 +49,8 @@ public final class VideoExporter {
 
         let backgroundUrlAsset = AVURLAsset(url: backgroundVideoUrl)
         guard let backgroundAsset = backgroundUrlAsset.tracks(withMediaType: AVMediaType.video).first else { return Promise(error: Error.backgroundVideoUrlNil) }
-        let renderSize = CGSize(width: backgroundAsset.naturalSize.width, height: backgroundAsset.naturalSize.height)
+//        let renderSize = CGSize(width: backgroundAsset.naturalSize.width, height: backgroundAsset.naturalSize.height)
+        let renderSize = CGSize(width: editorViewSize.width, height: editorViewSize.height)
         var maxDuration: CMTime = kCMTimeZero
         if backgroundUrlAsset.duration > maxDuration {
             maxDuration = backgroundUrlAsset.duration
@@ -60,28 +66,58 @@ public final class VideoExporter {
 
             let scaleWidth = renderSize.width / editorViewSize.width
             let scaleHeight = renderSize.height / editorViewSize.height
+            print(renderSize, editorViewSize, scaleWidth, scaleHeight)
             
             layerInstructions = assets.enumerated().flatMap { index, urlAsset -> AVMutableVideoCompositionLayerInstruction? in
                 let gif = self.gifImageViews[index]
                 
                 let gifTransform = gif.transform
-                let anchorPoint = gif.layer.anchorPoint
-                let scaleByTransform = CGAffineTransform(scaleX: scaleWidth, y: scaleHeight)
-                var translatedBy = CGAffineTransform(translationX: gif.frame.origin.x * scaleWidth, y: gif.frame.origin.y * scaleHeight)
+                var finalTransform = CGAffineTransform.identity
                 
-                if gifTransform.b != 0.0 || gifTransform.c != 0.0 {
-                    let b = translatedBy.b
-                    let c = translatedBy.c
-                    translatedBy = translatedBy.concatenating(CGAffineTransform(translationX: -(gif.frame.width / 2 * scaleWidth), y: -(gif.frame.height / 2 * scaleHeight)))
-                    translatedBy.b = 0.0
-                    translatedBy.c = 0.0
-                    translatedBy = translatedBy.concatenating(CGAffineTransform(translationX: (gif.frame.width / 2 * scaleWidth), y: (gif.frame.height * scaleHeight)))
-                    translatedBy.b = b
-                    translatedBy.c = c
-                }
+                let gifRotation = CGFloat(rotation(t: gifTransform))
+                print(gifRotation.degreesToRadians, gifRotation.radiansToDegrees, gifRotation)
 
-                let finalTransform = gifTransform.concatenating(scaleByTransform).concatenating(translatedBy)
+                //                let differenceWidth = (gif.transform.tx + (editorViewSize.width / 2 - gif.frame.width / 2)) * scaleWidth
+                //                let differenceHeight = (gif.transform.ty + (editorViewSize.height / 2 - gif.frame.height / 2)) * scaleHeight
+                //                let rotatedOriginXDiffCounterClockwise = differenceWidth * cos(gifRotation) - differenceHeight * sin(gifRotation)
+                //                let rotatedOriginYDiffCounterClockwise = differenceWidth * sin(gifRotation) + differenceHeight * cos(gifRotation)
+                //
+                //                let rotatedOriginXDiffClockwise = differenceWidth * cos(gifRotation) + differenceHeight * sin(gifRotation)
+                //                let rotatedOriginYDiffClockwise =  differenceHeight * cos(gifRotation) - differenceWidth * sin(gifRotation)
                 
+                //                let gifTranslationX = rotatedOriginXDiffClockwise + gifWidthScaled
+                //                let gifTranslationY = rotatedOriginYDiffClockwise + gifHeightScaled
+
+                let centerX = gif.transform.tx + (editorViewSize.width / 2)
+                let centerY = gif.transform.ty + (editorViewSize.height / 2)
+
+                
+                let gifWidth = gif.intrinsicContentSize.width * xScale(t: gifTransform)
+                let gifHeight = gif.intrinsicContentSize.height * yScale(t: gifTransform)
+
+                
+                let adjacent = gifWidth / 2
+                let opposite = gifHeight / 2
+                
+                let hipotenuse = sqrt(pow(adjacent, 2) + pow(opposite, 2))
+                let thetaRad = acos((pow(hipotenuse, 2) + pow(adjacent, 2) - pow(opposite, 2)) / (2 * hipotenuse * adjacent))
+                
+                let angleRad: CGFloat = gifRotation
+                
+                let widthOffset = cos(angleRad - thetaRad) * hipotenuse
+                let heightOffset = sin(angleRad - thetaRad) * hipotenuse
+
+                let offsetPointOrigin = CGPoint(x: centerX + heightOffset, y: centerY - widthOffset)
+//                let offsetPointOriginOpposite = CGPoint(x: centerX - heightOffset, y: centerY + widthOffset)
+
+                
+                let gifSizeScaled = CGSize(width: xScale(t: gifTransform) * scaleWidth, height: yScale(t: gifTransform) * scaleHeight)
+
+                finalTransform = finalTransform.concatenating(CGAffineTransform(scaleX: gifSizeScaled.width, y: gifSizeScaled.height))
+                finalTransform = finalTransform.concatenating(CGAffineTransform(rotationAngle: gifRotation))
+                finalTransform = finalTransform.concatenating(CGAffineTransform(translationX: offsetPointOrigin.x * scaleWidth, y: offsetPointOrigin.y * scaleHeight))
+
+
                 guard let track = createTrack(asset: urlAsset, composition: mixComposition, maxDuration: Float(maxDuration.value), transform: finalTransform) else { return nil }
                 return createLayerInstruction(track: track, transform: finalTransform)
             }
@@ -129,7 +165,7 @@ public final class VideoExporter {
 extension VideoExporter {
     func createTrack(asset: AVURLAsset, composition: AVMutableComposition, maxDuration: Float, transform: CGAffineTransform) -> AVMutableCompositionTrack? {
         guard let track = composition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: kCMPersistentTrackID_Invalid) else { return nil }
-        track.preferredTransform = transform
+//        track.preferredTransform = transform
         do {
             if let firstAsset = asset.tracks(withMediaType: AVMediaType.video).first {
                 if maxDuration > Float(asset.duration.value) {
@@ -175,8 +211,8 @@ extension VideoExporter {
                 do {
                     try fileManager.removeItem(atPath: completeMoviePath.path)
                 } catch {
-                    return Promise(error: Error.fileManagerRemovalError)
                     print("try catch removing error")
+                    return Promise(error: Error.fileManagerRemovalError)
                 }
             }
             
@@ -213,5 +249,27 @@ extension VideoExporter {
         }else{
             return Promise(error: Error.fileManagerRemovalError)
         }
+    }
+}
+
+extension VideoExporter {
+    func xScale(t: CGAffineTransform) -> CGFloat {
+        return sqrt(t.a * t.a + t.c * t.c)
+    }
+    
+    func yScale(t: CGAffineTransform) -> CGFloat {
+        return sqrt(t.b * t.b + t.d * t.d)
+    }
+    
+    func rotation(t: CGAffineTransform) -> CGFloat {
+        return CGFloat(atan2f(Float(t.b), Float(t.a)))
+    }
+    
+    func tx(t: CGAffineTransform) -> CGFloat {
+        return t.tx
+    }
+    
+    func ty(t: CGAffineTransform) -> CGFloat {
+        return t.ty
     }
 }

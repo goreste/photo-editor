@@ -31,13 +31,13 @@ public final class PhotoEditorViewController: UIViewController {
     @IBOutlet weak var colorPickerViewBottomConstraint: NSLayoutConstraint!
     
     //Controls
-    @IBOutlet weak var cropButton: UIButton!
-    @IBOutlet weak var stickerButton: UIButton!
+//    @IBOutlet weak var cropButton: UIButton!
+    @IBOutlet weak var gifButton: UIButton!
     @IBOutlet weak var drawButton: UIButton!
     @IBOutlet weak var textButton: UIButton!
-    @IBOutlet weak var saveButton: UIButton!
+//    @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var shareButton: UIButton!
-    @IBOutlet weak var clearButton: UIButton!
+//    @IBOutlet weak var clearButton: UIButton!
     
     public var viewModel: PhotoEditorViewModel!
     /**
@@ -77,7 +77,8 @@ public final class PhotoEditorViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
+        doneButton.isHidden = true
+
         var image = viewModel.avatarImage
         if let backgroundImage = viewModel.backgroundImage {
             image = backgroundImage
