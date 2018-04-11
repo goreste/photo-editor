@@ -28,19 +28,21 @@ class ViewController: UIViewController {
         guard let backgroundImage = UIImage(named: "backgroundImage") else { return }
         guard let avatarImage = UIImage(named: "avatar") else { return }
         var stickers: [UIImage] = []
-        for i in 0...10 {
-            if let image = UIImage(named: i.description) {
-                stickers.append(image)
-            }
-        }
+//        for i in 0...10 {
+//            if let image = UIImage(named: i.description) {
+//                stickers.append(image)
+//            }
+//        }
         let gifUrls = FileUtils.scanGifFiles()
         let videoUrl = FileUtils.scanFilesFor(fileExtension: "mp4").filter({ $0.path.contains("test") }).first
 
         
-        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: backgroundImage, backgroundVideoUrl: videoUrl, avatarImage: avatarImage, stickers: stickers, gifUrls: gifUrls)
+        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: nil, backgroundVideoUrl: videoUrl, avatarImage: avatarImage, stickers: [], gifUrls: [])
         let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
         photoEditor.photoEditorDelegate = self
         photoEditor.viewModel = photoEditorViewModel
+        
+        photoEditorViewModel.gifUrls = gifUrls
         //Colors for drawing and Text, If not set default values will be used
         //        photoEditor.colors = [.red,.blue,.green]
         

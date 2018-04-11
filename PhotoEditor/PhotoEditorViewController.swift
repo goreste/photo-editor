@@ -11,32 +11,32 @@ import UIKit
 public final class PhotoEditorViewController: UIViewController {
     
     /** holding the 2 imageViews original image and drawing & stickers */
-    @IBOutlet weak var canvasView: UIView!
+    @IBOutlet public weak var canvasView: UIView!
     //To hold the image
-    @IBOutlet var imageView: UIImageView!
-    @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet public var imageView: UIImageView!
+    @IBOutlet public weak var imageViewHeightConstraint: NSLayoutConstraint!
     //To hold the drawings and stickers
-    @IBOutlet weak var canvasImageView: UIImageView!
+    @IBOutlet public weak var canvasImageView: UIImageView!
 
-    @IBOutlet weak var topToolbar: UIView!
-    @IBOutlet weak var bottomToolbar: UIView!
+    @IBOutlet public weak var topToolbar: UIView!
+    @IBOutlet public weak var bottomToolbar: UIView!
 
-    @IBOutlet weak var topGradient: UIView!
-    @IBOutlet weak var bottomGradient: UIView!
+    @IBOutlet public weak var topGradient: UIView!
+    @IBOutlet public weak var bottomGradient: UIView!
     
-    @IBOutlet weak var doneButton: UIButton!
-    @IBOutlet weak var deleteView: UIView!
-    @IBOutlet weak var colorsCollectionView: UICollectionView!
-    @IBOutlet weak var colorPickerView: UIView!
-    @IBOutlet weak var colorPickerViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet public weak var doneButton: UIButton!
+    @IBOutlet public weak var deleteView: UIView!
+    @IBOutlet public weak var colorsCollectionView: UICollectionView!
+    @IBOutlet public weak var colorPickerView: UIView!
+    @IBOutlet public weak var colorPickerViewBottomConstraint: NSLayoutConstraint!
     
     //Controls
 //    @IBOutlet weak var cropButton: UIButton!
-    @IBOutlet weak var gifButton: UIButton!
-    @IBOutlet weak var drawButton: UIButton!
-    @IBOutlet weak var textButton: UIButton!
+    @IBOutlet public weak var gifButton: UIButton!
+    @IBOutlet public weak var drawButton: UIButton!
+    @IBOutlet public weak var textButton: UIButton!
 //    @IBOutlet weak var saveButton: UIButton!
-    @IBOutlet weak var shareButton: UIButton!
+    @IBOutlet public weak var shareButton: UIButton!
 //    @IBOutlet weak var clearButton: UIButton!
     
     public var viewModel: PhotoEditorViewModel!

@@ -64,16 +64,16 @@ extension PhotoEditorViewController {
         textView.layer.shadowOffset = CGSize(width: 1.0, height: 0.0)
         textView.layer.shadowOpacity = 0.2
         textView.layer.shadowRadius = 1.0
-        textView.layer.backgroundColor = UIColor.clear.cgColor
         textView.autocorrectionType = .no
         textView.isScrollEnabled = false
         textView.delegate = self
+        textView.layer.backgroundColor = UIColor.clear.cgColor
         textView.backgroundColor = .clear
-        if #available(iOS 10.0, *) {
-            textView.adjustsFontForContentSizeCategory = true
-        } else {
-            // Fallback on earlier versions
-        }
+        #if DEBUG
+            textView.layer.backgroundColor = UIColor.red.cgColor
+            textView.backgroundColor = .red
+        #endif
+        textView.adjustsFontForContentSizeCategory = true
         self.canvasImageView.addSubview(textView)
         addGestures(view: textView)
         textView.becomeFirstResponder()
