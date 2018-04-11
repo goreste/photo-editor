@@ -1,6 +1,6 @@
 {
   "name": "PhotoEditor",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "summary": "Photo Editor supports drawing, writing text and adding stickers and emojis",
   "description": "Photo Editor supports drawing, writing text and adding stickers and emojis\nwith the ability to scale and rotate objects",
   "homepage": "https://github.com/goreste/photo-editor",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/goreste/photo-editor.git",
-    "tag": "0.9.6"
+    "tag": "0.9.7"
   },
   "platforms": {
     "ios": "9.0"
