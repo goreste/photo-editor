@@ -175,9 +175,11 @@ extension PhotoEditorViewController {
                 let coreImage = ciImage.transformed(by: identity)
                 let imageFromCIImage = UIImage(ciImage: coreImage)
                 
-                guard let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.size.width, height: view.frame.size.height)) else { return }
+                let customScalewidth = avatarImage.size.width / canvasImageView.frame.size.width
+                let customScaleHeight = avatarImage.size.height / canvasImageView.frame.size.height
+                guard let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: view.frame.origin.x * customScalewidth, y: view.frame.origin.y * customScaleHeight, width: view.frame.size.width * customScalewidth, height: view.frame.size.height * customScaleHeight)) else { return }
                 avatarImage = imageItems
-            }
+            } 
         }
 
         if let backgroundVideoUrl = viewModel.backgroundVideoUrl {// there is already a video as background
