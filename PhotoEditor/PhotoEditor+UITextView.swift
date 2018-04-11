@@ -11,6 +11,12 @@ import UIKit
 
 extension PhotoEditorViewController: UITextViewDelegate {
     public func textViewDidChange(_ textView: UITextView) {
+        print("text view did change")
+        doneButton.isHidden = false
+        let sizeToFit = textView.sizeThatFits(CGSize(width: UIScreen.main.bounds.size.width,
+                                                     height:CGFloat.greatestFiniteMagnitude))
+        textView.bounds.size = sizeToFit
+
         let rotation = atan2(textView.transform.b, textView.transform.a)
         if rotation == 0 {
             let oldFrame = textView.frame
@@ -20,6 +26,8 @@ extension PhotoEditorViewController: UITextViewDelegate {
     }
     
     public func textViewDidBeginEditing(_ textView: UITextView) {
+        print("text view did begin editing")
+        doneButton.isHidden = false
         isTyping = true
         lastTextViewTransform =  textView.transform
         lastTextViewTransCenter = textView.center
@@ -39,12 +47,17 @@ extension PhotoEditorViewController: UITextViewDelegate {
     }
     
     public func textViewDidEndEditing(_ textView: UITextView) {
+        print("text view did end editing")
+        doneButton.isHidden = true
         guard lastTextViewTransform != nil && lastTextViewTransCenter != nil && lastTextViewFont != nil
             else {
                 return
         }
         activeTextView = nil
         textView.font = self.lastTextViewFont!
+        let sizeToFit = textView.sizeThatFits(CGSize(width: UIScreen.main.bounds.size.width,
+                                                     height:CGFloat.greatestFiniteMagnitude))
+        textView.bounds.size = sizeToFit
         UIView.animate(withDuration: 0.3,
                        animations: {
                         textView.transform = self.lastTextViewTransform!

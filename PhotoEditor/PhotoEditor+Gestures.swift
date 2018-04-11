@@ -44,32 +44,60 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
      */
     @objc func pinchGesture(_ recognizer: UIPinchGestureRecognizer) {
         if let view = recognizer.view {
-            if view is UITextView {
-                let textView = view as! UITextView
+            if view is UITextView, let textView = view as? UITextView, let textViewFont = textView.font {
+
+                //                view.layer.transform = CATransform3DMakeRotation (angle, 0, 0, 1);
                 
-                if textView.font!.pointSize * recognizer.scale < 90 {
-                    let font = UIFont(name: textView.font!.fontName, size: textView.font!.pointSize * recognizer.scale)
-                    textView.font = font
-                    let sizeToFit = textView.sizeThatFits(CGSize(width: UIScreen.main.bounds.size.width,
-                                                                 height:CGFloat.greatestFiniteMagnitude))
-                    textView.bounds.size = CGSize(width: textView.intrinsicContentSize.width,
-                                                  height: sizeToFit.height)
-                    print("up \(textView.bounds.size)")
-                } else {
-                    let sizeToFit = textView.sizeThatFits(CGSize(width: UIScreen.main.bounds.size.width,
-                                                                 height:CGFloat.greatestFiniteMagnitude))
-                    textView.bounds.size = CGSize(width: textView.intrinsicContentSize.width,
-                                                  height: sizeToFit.height)
-                    print("down \(textView.bounds.size)")
-                }
+//                textView.transform = textView.transform.scaledBy(x: recognizer.scale, y: recognizer.scale)
+
                 
-                textView.setNeedsDisplay()
+//                if([(UIPinchGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
+//
+//                    lastScale = 1.0;
+//                    return;
+//                }
+//                CGFloat scale = 1.0 - (lastScale - [(UIPinchGestureRecognizer*)sender scale]);
+//
+//                CGAffineTransform currentTransform = [(UIPinchGestureRecognizer*)sender view].transform;
+//                CGAffineTransform newTransform = CGAffineTransformScale(currentTransform, scale, scale);
+//
+//                [[(UIPinchGestureRecognizer*)sender view] setTransform:newTransform];
+//
+//                lastScale = [(UIPinchGestureRecognizer*)sender scale];
+
+                
+                let scale = 1.0 - (lastScale - recognizer.scale)
+                let currentTranform = textView.transform
+                let newTransform = currentTranform.scaledBy(x: scale, y: scale)
+                textView.transform = newTransform
+                lastScale = recognizer.scale
+                
+                
+                
+//                if textViewFont.pointSize * recognizer.scale < 90 {
+//                    let font = UIFont(name: textViewFont.fontName, size: textViewFont.pointSize * recognizer.scale)
+//                    textView.font = font
+//                    let sizeToFit = textView.sizeThatFits(CGSize(width: UIScreen.main.bounds.size.width,
+//                                                                 height:CGFloat.greatestFiniteMagnitude))
+
+//                    textView.bounds.size = CGSize(width: textView.intrinsicContentSize.width,
+//                                                  height: sizeToFit.height)
+
+                //                    print("up \(sizeToFit)")
+//                    print("down \(textView.bounds.size) \(textView.frame.size)")
+//                } else {
+//                    let sizeToFit = textView.sizeThatFits(CGSize(width: UIScreen.main.bounds.size.width,
+//                                                                 height:CGFloat.greatestFiniteMagnitude))
+//                    textView.bounds.size = CGSize(width: textView.intrinsicContentSize.width,
+//                                                  height: sizeToFit.height)
+//                    print("down \(textView.bounds.size) \(textView.frame.size)")
+//                }
+            
+//                textView.setNeedsDisplay()
             } else {
                 view.transform = view.transform.scaledBy(x: recognizer.scale, y: recognizer.scale)
-                let hipotenuse = sqrt(pow(view.frame.width, 2) + pow(view.frame.height, 2))
-                print(hipotenuse, canvasImageView.frame.width, view.frame.width, view.frame.height)
+                recognizer.scale = 1
             }
-            recognizer.scale = 1
         }
     }
     

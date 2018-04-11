@@ -26,11 +26,11 @@ public enum control {
 extension PhotoEditorViewController {
 
      //MARK: Top Toolbar
-    @IBAction func cancelButtonTapped(_ sender: Any) {
+    @IBAction func closeButtonTapped(_ sender: Any) {
         photoEditorDelegate?.canceledEditing()
     }
 
-    @IBAction func cropButtonTapped(_ sender: UIButton) {
+    func cropButtonTapped(_ sender: UIButton) {
 //        let controller = CropViewController()
 //        controller.delegate = self
 //        controller.image = viewModel.backgroundImage
@@ -38,7 +38,7 @@ extension PhotoEditorViewController {
 //        present(navController, animated: true, completion: nil)
     }
 
-    @IBAction func stickersButtonTapped(_ sender: Any) {
+    @IBAction func gifButtonTapped(_ sender: Any) {
         addStickersViewController()
         doneButton.isHidden = true
     }
@@ -69,10 +69,12 @@ extension PhotoEditorViewController {
         textView.delegate = self
         textView.layer.backgroundColor = UIColor.clear.cgColor
         textView.backgroundColor = .clear
-        #if DEBUG
-            textView.layer.backgroundColor = UIColor.red.cgColor
-            textView.backgroundColor = .red
-        #endif
+//        #if DEBUG
+//            textView.layer.backgroundColor = UIColor.red.cgColor
+//            textView.backgroundColor = .red
+//        #endif
+        textView.clipsToBounds = false
+        textView.layer.masksToBounds = false
         textView.adjustsFontForContentSizeCategory = true
         self.canvasImageView.addSubview(textView)
         addGestures(view: textView)
@@ -92,7 +94,7 @@ extension PhotoEditorViewController {
     
     //MARK: Bottom Toolbar
     
-    @IBAction func saveButtonTapped(_ sender: AnyObject) {
+    func saveButtonTapped(_ sender: AnyObject) {
         UIImageWriteToSavedPhotosAlbum(canvasView.toImage(),self, #selector(PhotoEditorViewController.image(_:withPotentialError:contextInfo:)), nil)
     }
     
@@ -106,7 +108,7 @@ extension PhotoEditorViewController {
         present(activity, animated: true, completion: nil)
     }
     
-    @IBAction func clearButtonTapped(_ sender: AnyObject) {
+    func clearButtonTapped(_ sender: AnyObject) {
 //        //clear drawing
 //        canvasImageView.image = nil
 //        //clear stickers and textviews
@@ -134,34 +136,85 @@ extension PhotoEditorViewController {
         if let itemsImage = self.canvasImageView.image, let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: itemsImage){
             avatarImage = imageItems
         }
-        self.canvasImageView.subviews.forEach { textView in
-            if textView.isKind(of: UITextView.classForCoder()) {
-                guard let tempImage = self.canvasImageView.screenshot(view: textView) else { return }
-//                guard let tempImageSize = tempImage.suitableSize(widthLimit: self.canvasImageView.frame.size.width) else { return }
+        self.canvasImageView.subviews.forEach { view in
+            if view.isKind(of: UITextView.classForCoder()) {
+                guard let tempImage = self.canvasImageView.screenshot(view: view) else { return }
                 guard let cgImage = tempImage.cgImage else { return }
                 
-//                finalTransform = finalTransform.concatenating(CGAffineTransform(scaleX: gifSizeScaled.width, y: gifSizeScaled.height))
-//                finalTransform = finalTransform.concatenating(CGAffineTransform(rotationAngle: gifRotation))
-//                finalTransform = finalTransform.concatenating(CGAffineTransform(translationX: offsetPointOrigin.x * scaleWidth, y: offsetPointOrigin.y * scaleHeight))
-
-                let rotation = VideoExporter.shared.rotation(t: textView.transform)
-                let xScale = VideoExporter.shared.xScale(t: textView.transform)
-                let yScale = VideoExporter.shared.yScale(t: textView.transform)
                 
-                var identity = CGAffineTransform.identity
-                identity = identity.concatenating(CGAffineTransform(scaleX: xScale, y: yScale))
-                identity = identity.concatenating(CGAffineTransform(rotationAngle: -rotation))
-                identity = identity.concatenating(CGAffineTransform(translationX: textView.frame.origin.x * xScale, y: textView.frame.origin.y * yScale))
+                let txtRotation = VideoExporter.shared.rotation(t: view.transform)
+                let xScale = VideoExporter.shared.xScale(t: view.transform)
+                let yScale = VideoExporter.shared.yScale(t: view.transform)
+                
+                let txtWidth = view.bounds.width * xScale
+                let txtHeight = view.bounds.height * yScale
 
-                print(textView.transform)
-                print(identity)
+                var identity = CGAffineTransform.identity
+
+                
+                
+                let adjacent = txtWidth / 2
+                let opposite = txtHeight / 2
+                let hipotenuse = sqrt(pow(adjacent, 2) + pow(opposite, 2))
+                let thetaRad = acos((pow(hipotenuse, 2) + pow(adjacent, 2) - pow(opposite, 2)) / (2 * hipotenuse * adjacent))
+                let angleRad: CGFloat = txtRotation
+                
+                let widthOffset = cos(angleRad - thetaRad) * hipotenuse
+                let heightOffset = sin(angleRad - thetaRad) * hipotenuse
+                let offsetPointOrigin = CGPoint(x: view.center.x + heightOffset, y: view.center.y - widthOffset)
+                
+                let txtSizeScaled = CGSize(width: xScale, height: yScale)
+                
+                identity = identity.concatenating(CGAffineTransform(scaleX: txtSizeScaled.width, y: txtSizeScaled.height))
+                identity = identity.concatenating(CGAffineTransform(rotationAngle: -txtRotation))
+                identity = identity.concatenating(CGAffineTransform(translationX: offsetPointOrigin.x, y: offsetPointOrigin.y))
+
+                
                 
                 let ciImage = CIImage(cgImage: cgImage)
 //                let coreImage = ciImage.transformed(by: textView.transform).transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
                 let coreImage = ciImage.transformed(by: identity)//.transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
                 let imageFromCIImage = UIImage(ciImage: coreImage)//.imageFlippedForRightToLeftLayoutDirection()
 
-                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: textView.frame.origin.x, y: textView.frame.origin.y, width: tempImage.size.width, height: tempImage.size.height)){
+                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.size.width, height: view.frame.size.height)){
+                    avatarImage = imageItems
+                }
+            }else if view.isKind(of: UIView.classForCoder()) {
+                guard let stickerImage = self.canvasImageView.screenshot(view: view) else { return }
+                guard let cgImage = stickerImage.cgImage else { return }
+                
+                
+                let rotation = VideoExporter.shared.rotation(t: view.transform)
+                let xScale = VideoExporter.shared.xScale(t: view.transform)
+                let yScale = VideoExporter.shared.yScale(t: view.transform)
+                
+                let width = view.bounds.width * xScale
+                let height = view.bounds.height * yScale
+                
+                
+                let adjacent = width / 2
+                let opposite = height / 2
+                let hipotenuse = sqrt(pow(adjacent, 2) + pow(opposite, 2))
+                let thetaRad = acos((pow(hipotenuse, 2) + pow(adjacent, 2) - pow(opposite, 2)) / (2 * hipotenuse * adjacent))
+                let angleRad: CGFloat = rotation
+                
+                let widthOffset = cos(angleRad - thetaRad) * hipotenuse
+                let heightOffset = sin(angleRad - thetaRad) * hipotenuse
+                let offsetPointOrigin = CGPoint(x: view.center.x + heightOffset, y: view.center.y - widthOffset)
+                
+                let sizeScaled = CGSize(width: xScale, height: yScale)
+                
+                var identity = CGAffineTransform.identity
+                identity = identity.concatenating(CGAffineTransform(scaleX: sizeScaled.width, y: sizeScaled.height))
+                identity = identity.concatenating(CGAffineTransform(rotationAngle: -rotation))
+                identity = identity.concatenating(CGAffineTransform(translationX: offsetPointOrigin.x, y: offsetPointOrigin.y))
+                
+                
+                let ciImage = CIImage(cgImage: cgImage)
+                let coreImage = ciImage.transformed(by: identity)
+                let imageFromCIImage = UIImage(ciImage: coreImage)
+                
+                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.size.width, height: view.frame.size.height)){
                     avatarImage = imageItems
                 }
             }

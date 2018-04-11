@@ -18,7 +18,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PhotoEditorViewController" customModule="editorTest" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PhotoEditorViewController" customModule="PhotoEditor" customModuleProvider="target">
             <connections>
                 <outlet property="bottomGradient" destination="ZGa-1B-gkO" id="pYn-g8-ak7"/>
                 <outlet property="bottomToolbar" destination="87h-1G-t5q" id="Pzi-Dw-qOq"/>
@@ -71,7 +71,7 @@
                         <constraint firstItem="5rw-9v-ExQ" firstAttribute="leading" secondItem="S1Y-ZS-dct" secondAttribute="leading" id="v73-ro-BkR"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rLz-36-0xz" customClass="GradientView" customModule="editorTest" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rLz-36-0xz" customClass="GradientView" customModule="PhotoEditor" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
@@ -93,7 +93,7 @@
                                 <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="0.1532266695" colorSpace="calibratedRGB"/>
                             </state>
                             <connections>
-                                <action selector="cancelButtonTapped:" destination="-1" eventType="touchUpInside" id="jpW-r4-cpQ"/>
+                                <action selector="closeButtonTapped:" destination="-1" eventType="touchUpInside" id="jpW-r4-cpQ"/>
                             </connections>
                         </button>
                     </subviews>
@@ -115,7 +115,7 @@
                         <action selector="doneButtonTapped:" destination="-1" eventType="touchUpInside" id="me6-qL-hJA"/>
                     </connections>
                 </button>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZGa-1B-gkO" customClass="GradientView" customModule="editorTest" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZGa-1B-gkO" customClass="GradientView" customModule="PhotoEditor" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="587" width="375" height="80"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <constraints>
@@ -142,7 +142,7 @@
                                         <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="0.1532266695" colorSpace="calibratedRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="stickersButtonTapped:" destination="-1" eventType="touchUpInside" id="ipA-Yq-Eze"/>
+                                        <action selector="gifButtonTapped:" destination="-1" eventType="touchUpInside" id="ipA-Yq-Eze"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zlw-H0-WcJ">

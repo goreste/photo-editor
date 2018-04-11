@@ -27,17 +27,17 @@ class ViewController: UIViewController {
 //        guard let image = image else { return }
         guard let backgroundImage = UIImage(named: "backgroundImage") else { return }
         guard let avatarImage = UIImage(named: "avatar") else { return }
-        var stickers: [UIImage] = []
-//        for i in 0...10 {
-//            if let image = UIImage(named: i.description) {
-//                stickers.append(image)
-//            }
-//        }
         let gifUrls = FileUtils.scanGifFiles()
         let videoUrl = FileUtils.scanFilesFor(fileExtension: "mp4").filter({ $0.path.contains("test") }).first
+        var stickers: [UIImage] = []
+        for i in 0...10 {
+            if let image = UIImage(named: i.description) {
+                stickers.append(image)
+            }
+        }
 
         
-        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: nil, backgroundVideoUrl: videoUrl, avatarImage: avatarImage, stickers: [], gifUrls: [])
+        let photoEditorViewModel = PhotoEditorViewModel(backgroundImage: backgroundImage, backgroundVideoUrl: videoUrl, avatarImage: avatarImage, stickers: stickers, gifUrls: [])
         let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
         photoEditor.photoEditorDelegate = self
         photoEditor.viewModel = photoEditorViewModel
