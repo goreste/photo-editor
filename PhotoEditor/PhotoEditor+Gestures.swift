@@ -54,13 +54,14 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
                                                                  height:CGFloat.greatestFiniteMagnitude))
                     textView.bounds.size = CGSize(width: textView.intrinsicContentSize.width,
                                                   height: sizeToFit.height)
+                    print("up \(textView.bounds.size)")
                 } else {
                     let sizeToFit = textView.sizeThatFits(CGSize(width: UIScreen.main.bounds.size.width,
                                                                  height:CGFloat.greatestFiniteMagnitude))
                     textView.bounds.size = CGSize(width: textView.intrinsicContentSize.width,
                                                   height: sizeToFit.height)
+                    print("down \(textView.bounds.size)")
                 }
-                
                 
                 textView.setNeedsDisplay()
             } else {
@@ -176,16 +177,20 @@ extension PhotoEditorViewController : UIGestureRecognizerDelegate  {
         view.superview?.bringSubview(toFront: view)
         let pointToSuperView = recognizer.location(in: self.view)
 
-//        view.center = CGPoint(x: view.center.x + recognizer.translation(in: canvasImageView).x,
-//                              y: view.center.y + recognizer.translation(in: canvasImageView).y)
+
+        if view is UITextView {
+            view.center = CGPoint(x: view.center.x + recognizer.translation(in: canvasImageView).x,
+                                  y: view.center.y + recognizer.translation(in: canvasImageView).y)
+             recognizer.setTranslation(CGPoint.zero, in: canvasImageView)
+        }else{
+            view.transform.tx = pointToSuperView.x - canvasImageView.frame.width / 2 //+ view.frame.width / 2
+            view.transform.ty = pointToSuperView.y - canvasImageView.frame.height / 2 //+ view.frame.height / 2
+        }
         
-        view.transform.tx = pointToSuperView.x - canvasImageView.frame.width / 2 //+ view.frame.width / 2
-        view.transform.ty = pointToSuperView.y - canvasImageView.frame.height / 2 //+ view.frame.height / 2
         
 //        print(view.transform.tx + (canvasImageView.frame.width / 2), view.transform.ty + (canvasImageView.frame.height / 2))
-
-        let hipotenuse = sqrt(pow(view.frame.width, 2) + pow(view.frame.height, 2))
-        print(hipotenuse, canvasImageView.frame.width, view.frame.width, view.frame.height)
+//        let hipotenuse = sqrt(pow(view.frame.width, 2) + pow(view.frame.height, 2))
+//        print(hipotenuse, canvasImageView.frame.width, view.frame.width, view.frame.height)
 
         if let previousPoint = lastPanPoint {
             //View is going into deleteView
