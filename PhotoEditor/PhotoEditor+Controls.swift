@@ -28,7 +28,6 @@ extension PhotoEditorViewController {
      //MARK: Top Toolbar
     @IBAction func cancelButtonTapped(_ sender: Any) {
         photoEditorDelegate?.canceledEditing()
-        self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func cropButtonTapped(_ sender: UIButton) {
