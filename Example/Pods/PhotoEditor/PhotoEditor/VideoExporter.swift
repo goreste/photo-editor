@@ -201,7 +201,6 @@ extension VideoExporter {
                         }
                         
                     case .completed:
-                        print("finished \(completeMoviePath.lastPathComponent)")
                         DispatchQueue.main.async {
                             seal.fulfill(completeMoviePath)
                         }

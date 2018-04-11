@@ -15,15 +15,11 @@ import SVProgressHUD
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var saveVideoButton: UIButton!
     var videoPath = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageView.clipsToBounds = true
-        //        imageView.contentMode = .scaleAspectFit
         saveVideoButton.isHidden = true
     }
 

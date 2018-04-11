@@ -125,6 +125,7 @@ extension PhotoEditorViewController {
                 .done { [weak self] finalVideoUrl in
                     guard let `self` = self else { return }
                     self.photoEditorDelegate?.photoEditor(videoCreatedAt: finalVideoUrl)
+                    self.dismiss(animated: true, completion: nil)
                 }.catch { error in
                     print("Error exporting video: \(error)")
             }

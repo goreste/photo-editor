@@ -19,4 +19,12 @@ extension UIView {
         UIGraphicsEndImageContext()
         return snapshotImageFromMyView!
     }
+    
+    func screenshot(view: UIView) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, false, 0.0)
+        view.layer.render(in: UIGraphicsGetCurrentContext()!)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
 }

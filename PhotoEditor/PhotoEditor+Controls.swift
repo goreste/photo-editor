@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import Gifu
 import PromiseKit
+import CoreImage
 
 // MARK: - Control
 public enum control {
@@ -25,30 +26,31 @@ public enum control {
 extension PhotoEditorViewController {
 
      //MARK: Top Toolbar
-    
     @IBAction func cancelButtonTapped(_ sender: Any) {
         photoEditorDelegate?.canceledEditing()
         self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func cropButtonTapped(_ sender: UIButton) {
-        let controller = CropViewController()
-        controller.delegate = self
-        controller.image = viewModel.backgroundImage
-        let navController = UINavigationController(rootViewController: controller)
-        present(navController, animated: true, completion: nil)
+//        let controller = CropViewController()
+//        controller.delegate = self
+//        controller.image = viewModel.backgroundImage
+//        let navController = UINavigationController(rootViewController: controller)
+//        present(navController, animated: true, completion: nil)
     }
 
     @IBAction func stickersButtonTapped(_ sender: Any) {
         addStickersViewController()
+        doneButton.isHidden = true
     }
 
     @IBAction func drawButtonTapped(_ sender: Any) {
         isDrawing = true
         canvasImageView.isUserInteractionEnabled = false
-        doneButton.isHidden = false
+        shareButton.isHidden = false
         colorPickerView.isHidden = false
         hideToolbar(hide: true)
+        doneButton.isHidden = false
     }
 
     @IBAction func textButtonTapped(_ sender: Any) {
@@ -70,15 +72,17 @@ extension PhotoEditorViewController {
         self.canvasImageView.addSubview(textView)
         addGestures(view: textView)
         textView.becomeFirstResponder()
+        doneButton.isHidden = false
     }    
     
     @IBAction func doneButtonTapped(_ sender: Any) {
         view.endEditing(true)
-        doneButton.isHidden = true
+        shareButton.isHidden = false
         colorPickerView.isHidden = true
         canvasImageView.isUserInteractionEnabled = true
         hideToolbar(hide: false)
         isDrawing = false
+        doneButton.isHidden = true
     }
     
     //MARK: Bottom Toolbar
@@ -88,21 +92,25 @@ extension PhotoEditorViewController {
     }
     
     @IBAction func shareButtonTapped(_ sender: UIButton) {
-        let activity = UIActivityViewController(activityItems: [canvasView.toImage()], applicationActivities: nil)
+        startExportingVideo()
+        doneButton.isHidden = true
+    }
+    
+    func presentShare(videoURL: URL) {
+        let activity = UIActivityViewController(activityItems: [videoURL], applicationActivities: nil)
         present(activity, animated: true, completion: nil)
-        
     }
     
     @IBAction func clearButtonTapped(_ sender: AnyObject) {
-        //clear drawing
-        canvasImageView.image = nil
-        //clear stickers and textviews
-        for subview in canvasImageView.subviews {
-            subview.removeFromSuperview()
-        }
+//        //clear drawing
+//        canvasImageView.image = nil
+//        //clear stickers and textviews
+//        for subview in canvasImageView.subviews {
+//            subview.removeFromSuperview()
+//        }
     }
     
-    @IBAction func continueButtonPressed(_ sender: Any) {
+    func startExportingVideo() {
         self.photoEditorDelegate?.photoEditorStarCreatingVideo()
         let gifImageViews = self.canvasImageView.subviews.filter({ $0.isKind(of: GIFImageView.classForCoder()) }) as? [GIFImageView] ?? []
         var gifRemoteUrls: [URL] = []
@@ -114,10 +122,26 @@ extension PhotoEditorViewController {
             }
         }
         
-
+        
+        
+        
         var avatarImage = viewModel.avatarImage
         if let itemsImage = self.canvasImageView.image, let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: itemsImage){
             avatarImage = imageItems
+        }
+        self.canvasImageView.subviews.forEach { textView in
+            if textView.isKind(of: UITextView.classForCoder()) {
+                guard let tempImage = self.canvasImageView.screenshot(view: textView) else { return }
+                guard let cgImage = tempImage.cgImage else { return }
+                
+                let ciImage = CIImage(cgImage: cgImage)
+                let coreImage = ciImage.transformed(by: textView.transform).transformed(by: CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2)))
+                let imageFromCIImage = UIImage(ciImage: coreImage).imageFlippedForRightToLeftLayoutDirection()
+
+                if let imageItems = ImageUtil().mergeImages(backgroundImage: avatarImage, overImage: imageFromCIImage, overImageSize: textView.frame){
+                    avatarImage = imageItems
+                }
+            }
         }
 
         if let backgroundVideoUrl = viewModel.backgroundVideoUrl {// there is already a video as background
@@ -125,8 +149,10 @@ extension PhotoEditorViewController {
                 .done { [weak self] finalVideoUrl in
                     guard let `self` = self else { return }
                     self.photoEditorDelegate?.photoEditor(videoCreatedAt: finalVideoUrl)
-                    self.dismiss(animated: true, completion: nil)
+                    self.presentShare(videoURL: finalVideoUrl)
                 }.catch { error in
+//                    guard let `self` = self else { return }
+//                    self.photoEditorDelegate?.photoEditorError(finishedWith: error)
                     print("Error exporting video: \(error)")
             }
         }else if let backgroundImage = viewModel.backgroundImage {// create a video with background static image
@@ -140,8 +166,11 @@ extension PhotoEditorViewController {
                 }.done { [weak self] finalVideoUrl -> Void in
                     guard let `self` = self else { return }
                     self.photoEditorDelegate?.photoEditor(videoCreatedAt: finalVideoUrl)
-                    self.dismiss(animated: true, completion: nil)
+                    
+                    self.presentShare(videoURL: finalVideoUrl)
                 }.catch { error in
+//                    guard let `self` = self else { return }
+//                    self.photoEditorDelegate?.photoEditorError(finishedWith: error)
                     print("error while creating temp videos: \(error)")
             }
         }
@@ -170,25 +199,25 @@ extension PhotoEditorViewController {
     }
     
     @objc func hideControls() {
-        for control in hiddenControls {
-            switch control {
-                
-            case .clear:
-                clearButton.isHidden = true
-            case .crop:
-                cropButton.isHidden = true
-            case .draw:
-                drawButton.isHidden = true
-            case .save:
-                saveButton.isHidden = true
-            case .share:
-                shareButton.isHidden = true
-            case .sticker:
-                stickerButton.isHidden = true
-            case .text:
-                stickerButton.isHidden = true
-            }
-        }
+//        for control in hiddenControls {
+//            switch control {
+            
+//            case .clear:
+//                clearButton.isHidden = true
+//            case .crop:
+//                cropButton.isHidden = true
+//            case .draw:
+//                drawButton.isHidden = true
+//            case .save:
+//                saveButton.isHidden = true
+//            case .share:
+//                shareButton.isHidden = true
+//            case .sticker:
+//                gifButton.isHidden = true
+//            case .text:
+//                gifButton.isHidden = true
+//            }
+//        }
     }
     
 }
